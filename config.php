@@ -8,5 +8,5 @@ const PATH = '/';
 
 const HOST = 'localhost';
 const USER = 'root';
-const PASS = 'ClaynoreN6';
+const PASS = 'ClaymoreN6';
 const DB_NAME = 'db_name';

@@ -1,6 +1,7 @@
 <?php
 
 namespace core\base\controllers;
+use core\base\exceptions\RouteException;
 use core\base\settings\ShopSettings;
 use core\base\settings\Settings;
 
@@ -36,12 +37,118 @@ class RouteController
 
     private function __construct()
     {
-        $s = Settings::instance();
-        $s1 = ShopSettings::instance();
+//        $s = Settings::instance();
+//        $s1 = ShopSettings::instance();
+        $address_str = $_SERVER['REQUEST_URI'];
 
-
-        exit();
+    if(strrpos($address_str, '/') === strlen($address_str) - 1 && strrpos($address_str, '/') !== 0){
+        $this->redirect(rtrim($address_str, '/'), 301);
     }
+        $path = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], 'index.php'));
+
+        if($path === PATH){
+
+            $this->routes = Settings::get('routes');
+            if(!$this->routes) throw new RouteException('The site is under maintenance');
+
+            if (strpos($address_str, $this->routes['admin']['alias']) === strlen (PATH)) {
+
+
+                $url = explode('/', substr($address_str,PATH . $this->routes['admin']['alias'] + 1));
+
+                /*** Пути для плагинов ***/
+                if($url[0] !== null && is_dir($_SERVER['DOCUMENT_ROOT'] . PATH . $this->routes['plugins']['path'] . $url[0])) {
+
+                $plugin = array_shift($url);
+
+                $pluginSettings = $this->routes['settings']['path'] .ucfirst($plugin . 'Settings');
+
+                if(file_exists($_SERVER['DOCUMENT_ROOT'] . PATH . $pluginSettings . '.php')) {
+                    $pluginSettings = str_replace('/', '\\', $pluginSettings);
+                    /***  :: - Обращение к статическому свойству  ***/
+                    $this->routes = $pluginSettings::get('routes');
+                }
+                    $dir = $this->routes['plugins']['dir'] ? '/' . $this->routes['plugins']['dir'] . '/' : '/';
+                    $dir = str_replace('//', '/', $dir);
+                    $this->controller = $this->routes['plugins']['path'] . $plugin . $dir;
+                    $hrUrl = $this->routes['plugins']['hrUrl'];
+                    $route = 'plugins';
+
+                } else {
+
+                    /*** пути Админки ***/
+                    $this->controller = $this->routes['admin']['path'];
+                    $hrUrl = $this->routes['admin']['hrUrl'];
+                    $route = 'admin';
+                }
+
+
+            } else {
+                /***  пути пользователя   ***/
+                 $url = explode('/', substr($address_str,PATH));
+                 $hrUrl = $this->routes['user']['hrUrl'];
+                 $this->controller = $this->routes['user']['path'];
+
+                 $route = 'user';
+            }
+            $this->createRoute($route, $url);
+
+            if ($url[1]) {
+                $count = count($url);
+                $key = '';
+
+                if(!$hrUrl) {
+                    $i = 1;
+                } else {
+                    $this->parameters['alias'] = $url[1];
+                    $i = 2;
+                }
+                for(; $i < $count; $i++){
+                    if(!$key) {
+                        $key = $url[$i];
+//                        var_dump($key);
+                        $this->parameters[$key] = '';
+                    } else {
+                        $this->parameters[$key] = $url[$i];
+                        $key = '';
+                    }
+
+                }
+            }
+
+            exit();
+
+
+        } else {
+            try{
+                throw new \Exception('invalid site directory');
+            } catch(\Exception $e){
+                exit($e->getMessage());
+            }
+        }
+    }
+
+    private function createRoute($var, $arr) {
+        $route = [];
+        if (!empty($arr[0])) {
+            if($this->routes[$var]['routes'][$arr[0]]){
+                $route = explode('/', $this->routes[$var]['routes'][$arr[0]]);
+                $this->controller .= ucfirst($route[0] . 'Controller');
+
+            } else {
+                $this->controller .= ucfirst($arr[0] . 'Controller');
+            }
+        }else {
+            $this->controller .= $this->routes['default']['controller'];
+        }
+
+       $this->inputMethod = $route[1] ? $route[1] : $this->routes['default']['inputMethod'];
+        $this->outputMethod = $route[2] ? $route[2] : $this->routes['default']['outputMethod'];
+
+        return;
+
+    }
+
 
 
 }

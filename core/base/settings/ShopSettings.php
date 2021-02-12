@@ -16,13 +16,12 @@ class ShopSettings
         'textarea' => ['goods_content']
     ];
     private $routes = [
-        'admin' => [
-            'alias' => 'sudo',
+            'plugins' => [
+                'path' => 'core/plugins/',
+                'hrUrl' => false,
+                'dir' => 'controller'
+            ]
 
-        ],
-        'vasya' => [
-            'name' => 'vasya',
-        ]
     ];
 
     /*** * singleton ***/
