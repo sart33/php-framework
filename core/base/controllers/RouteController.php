@@ -51,10 +51,12 @@ class RouteController
 
             if(!$this->routes) throw new RouteException('The site is under maintenance');
 
-            if (strpos($address_str, $this->routes['admin']['alias']) === strlen (PATH)) {
+            $url = explode('/', substr($address_str,strlen (PATH)));
 
 
-                $url = explode('/', substr($address_str,strlen (PATH . $this->routes['admin']['alias']) + 1));
+            if ($url[0] && $url[0] === $this->routes['admin']['alias']) {
+
+                array_shift($url);
 
                 /*** Пути для плагинов ***/
 
@@ -88,7 +90,6 @@ class RouteController
 
             } else {
                 /***  пути пользователя   ***/
-                 $url = explode('/', substr($address_str,strlen (PATH)));
                  $hrUrl = $this->routes['user']['hrUrl'];
                  $this->controller = $this->routes['user']['path'];
 
@@ -118,7 +119,7 @@ class RouteController
                 }
             }
 
-
+//            exit();
 
 
         } else {
