@@ -2,7 +2,7 @@
 
 
 namespace core\base\settings;
-//use core\base\settings\ShopSettings;
+use core\base\settings\ShopSettings;
 
 
 class Settings
@@ -13,7 +13,10 @@ class Settings
         'admin' => [
             'alias' => 'admin',
             'path' => 'core/admin/controllers/',
-            'hrUrl' => false
+            'hrUrl' => false,
+            'routes' => [
+
+            ]
         ],
         'settings' => [
             'path' => 'core/base/settings/'

@@ -11,18 +11,19 @@ class ShopSettings
 
     private $baseSettings;
 
+    private $routes = [
+        'plugins' => [
+            'dir' => false,
+            'routes' => [
+
+            ]
+        ],
+    ];
     private $templateArr = [
         'text' => ['price', 'short'],
         'textarea' => ['goods_content']
     ];
-    private $routes = [
-            'plugins' => [
-                'path' => 'core/plugins/',
-                'hrUrl' => false,
-                'dir' => 'controller'
-            ]
 
-    ];
 
     /*** * singleton ***/
 
