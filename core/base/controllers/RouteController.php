@@ -5,15 +5,12 @@ use core\base\exceptions\RouteException;
 use core\base\settings\ShopSettings;
 use core\base\settings\Settings;
 
-class RouteController
+class RouteController extends BaseController
 {
 
     static private $_instance;
 
-    protected $controller;
-    protected $inputMethod;
-    protected $outputMethod;
-    protected $parameters;
+
 
     protected $routes;
 

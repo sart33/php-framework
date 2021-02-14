@@ -1,7 +1,7 @@
 <?php
-ini_set('error_reporting', E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+//ini_set('error_reporting', E_ALL);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
 
 define('VG_ACCESS', true);
 header('Content-Type:text/html;charset=utf8');
@@ -24,32 +24,7 @@ catch (RouteException $e) {
     exit($e->getMessage());
 
 }
-//catch (\core\base\exceptions\Route2Exception $e) {
-//    exit('code executed');
-//}
-//class A {
-//    public function __construct()
-//    {
-//        (new B());
-//    }
-//}
-//class B {
-//    public function __construct()
-//    {
-//        (new C());
-//    }
-//}
-//class C {
-//
-//    public $db = true;
-//
-//    public function __construct()
-//    {
-//        if($this->db)  throw new \core\base\exceptions\Route2Exception('Small error');
-//        else throw new RouteException('Error');
-//
-//    }
-//}
+
 
 
 
