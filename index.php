@@ -14,6 +14,7 @@ use core\base\controllers\RouteController;
 
 try {
     /*** Вызов статического метода у класса  RouteController ***/
+    /*** Поскольку вызов идет вне класса, то модификатор доступа у route() - должен быть "Паблик"***/
    RouteController::getInstance()->route();
 }
 /****Есл исключение класса RouteException будет сгенерировано посредством создания объекта А который начнет созд. др.
