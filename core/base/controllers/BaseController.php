@@ -28,7 +28,7 @@ abstract class BaseController
             $object->invoke(new $controller, $args);
         }
         catch(\ReflectionException $e) {
-            throw new RouteException($e);
+            throw new RouteException($e->getMessage());
 
         }
 
