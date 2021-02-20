@@ -8,7 +8,7 @@ use core\base\settings\ShopSettings;
 class Settings
 {
     static private $_instance;
-
+//v3 'path' => 'core/admin/controllers/'.... - Эти пути являются одновременно и пространствами имен
     private $routes = [
         'admin' => [
             'alias' => 'admin',
@@ -30,7 +30,6 @@ class Settings
             'path' => 'core/user/controllers/',
             'hrUrl' => true,
             'routes' => [
-                'catalog' => 'site'
             ]
 
         ],
