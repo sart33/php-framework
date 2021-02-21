@@ -2,13 +2,17 @@
 
 
 namespace core\base\settings;
+use core\base\controllers\Singleton;
 use core\base\settings\ShopSettings;
 
 
 class Settings
 {
-    static private $_instance;
+//    static private $_instance; - перекочевало в трейт
 //v3 'path' => 'core/admin/controllers/'.... - Эти пути являются одновременно и пространствами имен
+
+    use Singleton;
+
     private $routes = [
         'admin' => [
             'alias' => 'admin',
@@ -37,7 +41,7 @@ class Settings
             'controller' => 'IndexController',
             'inputMethod' => 'inputData',
             'outputMethod' => 'outputData'
-        ]
+        ],
     ];
 
     private $templateArr = [
@@ -47,21 +51,11 @@ class Settings
 
     private $lalala = 'lalala';
 
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
+// Клон и констракт тож удалили
 
 /*** * singleton ***/
-    static public function  instance() {
-        if(self::$_instance instanceof self) {
-            return self::$_instance;
-        }
-            return self::$_instance = new self;
-        }
+    // Удалили - перекочевал в трейт
+
 
         static public function get($property) {
             return self::instance()->$property;

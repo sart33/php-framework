@@ -7,31 +7,7 @@ namespace core\base\controllers;
 trait BaseMethods
 {
 
-    protected $styles;
-    protected $scripts;
 
-
-    protected function init($admin = false)
-    {
-
-        if (!$admin) {
-            if (USER_CSS_JS['styles']) {
-                // тримом отрежем возможный / перед css/style.css, к примеру
-                foreach (USER_CSS_JS['styles'] as $item) $this->styles[] = PATH . TEMPLATE . trim($item, '/');
-            }
-            if (USER_CSS_JS['scripts']) {
-                foreach (USER_CSS_JS['scripts'] as $item) $this->scripts[] = PATH . TEMPLATE . trim($item, '/');
-            }
-        } else {
-            if (ADMIN_CSS_JS['styles']) {
-                // тримом отрежем возможный / перед css/style.css, к примеру
-                foreach (ADMIN_CSS_JS['styles'] as $item) $this->styles[] = PATH . TEMPLATE . trim($item, '/');
-            }
-            if (ADMIN_CSS_JS['scripts']) {
-                foreach (ADMIN_CSS_JS['scripts'] as $item) $this->scripts[] = PATH . TEMPLATE . trim($item, '/');
-            }
-        }
-    }
 
     protected function clearStr($str) {
 

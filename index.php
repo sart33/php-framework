@@ -12,10 +12,16 @@ require_once 'core/base/settings/internal_settings.php';
 use core\base\exceptions\RouteException;
 use core\base\controllers\RouteController;
 
+use core\base\settings\Settings;
+
+    $s = Settings::get('routed');
+    $s1 = Settings::get('templateArr');
+
+
 try {
     /*** Вызов статического метода у класса  RouteController ***/
     /*** Поскольку вызов идет вне класса, то модификатор доступа у route() - должен быть "Паблик"***/
-   RouteController::getInstance()->route();
+   RouteController::instance()->route();
 }
 /****Есл исключение класса RouteException будет сгенерировано посредством создания объекта А который начнет созд. др.
  * объекты и т.д. То сгенерированное в этой цепочке throw RouteException - прилетит в этот catch . throw ищет ближайший catch этого класса. Если начали ч/з блок try  ***/

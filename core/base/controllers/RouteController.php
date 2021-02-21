@@ -8,28 +8,16 @@ use core\base\settings\Settings;
 class RouteController extends BaseController
 {
 
-    static private $_instance;
-
-
+    use Singleton;
 
     protected $routes;
 
 
     /*** Работаем в необъектном контексте, а в статическом. $this-> не доступен потому что $this-> ссылка на объект   ***/
-    static public function getInstance()
-{
-     if(self::$_instance instanceof self)
-     {
-         return self::$_instance;
-
-     }
-     return self::$_instance = new self;
-}
+// getInstance - тож будет тянуться из трейта
 
     /***блокируем клонирование объекта из вне */
-    private function __clone()
-    {
-    }
+// __clone в трейт
 
         /***блокируем создание объекта из вне */
     private function __construct()
