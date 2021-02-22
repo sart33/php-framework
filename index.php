@@ -12,11 +12,6 @@ require_once 'core/base/settings/internal_settings.php';
 use core\base\exceptions\RouteException;
 use core\base\controllers\RouteController;
 
-use core\base\settings\Settings;
-
-    $s = Settings::get('routed');
-    $s1 = Settings::get('templateArr');
-
 
 try {
     /*** Вызов статического метода у класса  RouteController ***/

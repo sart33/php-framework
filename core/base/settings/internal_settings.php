@@ -30,8 +30,7 @@ const USER_CSS_JS = [
 use core\base\exceptions\RouteException;
 function autoloadMainClasses($className) {
     $className = str_replace('\\', '/', $className);
-    if(!@include_once $className . '.php') {
-        throw new RouteException('File name - not valid for include -'. $className);
-    }
+    include_once $className . '.php';
+
 }
 spl_autoload_register('autoloadMainClasses');

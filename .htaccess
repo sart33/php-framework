@@ -3,6 +3,8 @@ AddDefaultCharset utf-8
 DirectoryIndex index.php
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !favicon.ico
+
 RewriteRule ^(.*) index.php
 #RewriteCond %{REQUEST_URI} !^\/resources/styles/(.*).css
 #RewriteCond %{REQUEST_URI} !^\/resources/images/(.*).png

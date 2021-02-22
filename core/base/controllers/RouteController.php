@@ -2,7 +2,6 @@
 
 namespace core\base\controllers;
 use core\base\exceptions\RouteException;
-use core\base\settings\ShopSettings;
 use core\base\settings\Settings;
 
 class RouteController extends BaseController
@@ -40,7 +39,7 @@ class RouteController extends BaseController
         $this->routes = Settings::get('routes');
         //если свойства routes - не получены - мы не сможем продолжать выполнение скрипта. Генерируем исключение
 
-        if(!$this->routes) throw new RouteException('the site is under maintenance');
+        if(!$this->routes) throw new RouteException('Отсутствуют маршруты в базовых настройках', 1);
         //Если скрипт выбрасывает исключение, скрипт автоматически переходит в index.php в блок catch() и работа скрипта завершается
 
             /*** ПРОВЕРЯЕМ, НЕ В АДМИНКУ ЛИ ПЫТАЕТСЯ ПОПАСТЬ ЧЕЛОВЕК ОТПРАВИВШИЙ ЗАПРОС */
@@ -151,14 +150,11 @@ class RouteController extends BaseController
 
         } else {
             //В этой ситуации нет смысла продолжать другие действия
-            try {
+
                 //Выбросим исключение базового класса \Exception и сообщение
-                throw new \Exception ('incorrect site directory' );
-            }
-            catch(\Exception $e) {
-            //Завершим работу скрипта, вызвав у убъекта исключения метод getMessage()
-                exit($e->getMessage());
-            }
+                throw new RouteException ('incorrect site directory', 1);
+
+
         }
     }
     /*** На вход должны передать маршрут и массив */
