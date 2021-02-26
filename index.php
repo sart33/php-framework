@@ -1,6 +1,6 @@
 <?php
 ini_set('error_reporting', E_ALL);
-ini_set('display_errors', 1);
+//ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 define('VG_ACCESS', true);
@@ -10,6 +10,7 @@ require_once 'config.php';
 require_once 'core/base/settings/internal_settings.php';
 
 use core\base\exceptions\RouteException;
+use core\base\exceptions\DbException;
 use core\base\controllers\RouteController;
 
 
@@ -22,6 +23,11 @@ try {
  * объекты и т.д. То сгенерированное в этой цепочке throw RouteException - прилетит в этот catch . throw ищет ближайший catch этого класса. Если начали ч/з блок try  ***/
 
 catch (RouteException $e) {
+    exit($e->getMessage());
+
+}
+
+catch (DbException $e) {
     exit($e->getMessage());
 
 }

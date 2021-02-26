@@ -8,4 +8,4 @@ const PATH = '/';
 const HOST = 'localhost';
 const USER = 'root';
 const PASS = 'ClaymoreN6';
-const DB_NAME = 'db_name';
+const DB_NAME = 'voyts_4_com';
