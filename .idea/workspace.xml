@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83816adb-e80b-4016-9a10-6631394c12c5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/core/base/models/BaseModelMethods.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/admin/controllers/IndexController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/IndexController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/base/models/BaseModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/models/BaseModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +74,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="MERGE" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/core/base/models/BaseModel.php" root0="FORCE_HIGHLIGHTING" root1="SKIP_INSPECTION" />
   </component>
   <component name="IgnoredFileRootStore">
     <option name="generatedRoots">
@@ -81,7 +85,7 @@
       </set>
     </option>
   </component>
-  <component name="PhpDebugGeneral" xdebug_show_addresses="true" break_at_first_line="true" detect_path_mappings_from_deployment_configuration="false" />
+  <component name="PhpDebugGeneral" xdebug_show_addresses="true" break_at_first_line="true" detect_path_mappings_from_deployment_configuration="false" ignore_connections_through_unregistered_servers="true" show_user_defined_constants="false" />
   <component name="PhpServers">
     <servers>
       <server host="phpauto.loc" id="4c0226b4-e35a-4c8b-a5ea-71de00d2643a" name="phpauto.loc" />
@@ -119,12 +123,13 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="database.data.extractors.current.export.id" value="Comma-separated (CSV)_id" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../voyts4-com" />
     <property name="node.js.detected.package.stylelint" value="true" />
     <property name="node.js.path.for.package.stylelint" value="project" />
     <property name="node.js.selected.package.stylelint" value="" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="settings.editor.selected.configurable" value="reference.webide.settings.project.settings.php.debug" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -303,6 +308,15 @@
       <workItem from="1614608048708" duration="620000" />
       <workItem from="1614610040450" duration="430000" />
       <workItem from="1614610534796" duration="767000" />
+      <workItem from="1616260817968" duration="7589000" />
+      <workItem from="1616339072566" duration="601000" />
+      <workItem from="1616373530763" duration="2583000" />
+      <workItem from="1616418214159" duration="1701000" />
+      <workItem from="1616419927263" duration="4200000" />
+      <workItem from="1616429128537" duration="6586000" />
+      <workItem from="1616451876326" duration="6760000" />
+      <workItem from="1616517021877" duration="1882000" />
+      <workItem from="1616541112003" duration="1172000" />
     </task>
     <task id="LOCAL-00001" summary="routing use singleton pattern">
       <created>1612921077069</created>
@@ -409,7 +423,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614335380480</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Создали все методы выборки из базы данных">
+      <created>1616255941103</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1616255941103</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -420,7 +441,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -442,23 +475,8 @@
     <MESSAGE value="Используя трейт Singleton отдали ему все методы instance, - которые потом от него наследуются." />
     <MESSAGE value="Доработали обработку исключений. Сформировали кончтрукцию которая пишет в лог файл. И удалил выброс исключения из автозагрузки (не оч. корректно работал с РНР 7.14. Поскольку используется  reflection - этот выброс можно удалить)" />
     <MESSAGE value="Базовый метод работы с ДБ создали." />
-    <option name="LAST_COMMIT_MESSAGE" value="Базовый метод работы с ДБ создали." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/core/base/controllers/BaseController.php</url>
-          <line>113</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/core/admin/controllers/IndexController.php</url>
-          <line>36</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Создали все методы выборки из базы данных" />
+    <option name="LAST_COMMIT_MESSAGE" value="Создали все методы выборки из базы данных" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

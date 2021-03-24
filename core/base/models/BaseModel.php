@@ -8,13 +8,13 @@ use core\base\controllers\Singleton;
 use core\base\exceptions\DbException;
 use http\Params;
 
-class BaseModel
+class BaseModel extends BaseModelMethods
 {
     use Singleton;
 
     protected $db;
 
-    private function __construct()
+    private function __construct()  
     {
         $this->db = @new \mysqli(HOST, USER, PASS, DB_NAME);
 
@@ -156,208 +156,97 @@ class BaseModel
 
     }
 
-    protected function createFields($set, $table = false)
-    {
-        //Если в $set['fields'] - что-то пришло тогда он им и останется. Если нет - то появится * (т.е. - выбрать все)
-        $set['fields'] = (is_array($set['fields']) && !empty($set['fields'])) ? $set['fields'] : ['*'];
+    /**
+     * @param $table - таблица для вставки данных
+     * @param array $set - массив параметров:
+     * fields => [ поле => значение]; если не указан - то обрабатывается $_POST [поле => значение]
+     * разрешена передача например NOW() в качестве MySQL функции - обычно строкой
+     * files => [поле => значение]; можна подать массив вида [ поле => массив значений ]];
+     * except => ['исключение 1', 'исключение 2'] - исключает данные элементы массива из добавления в запрос
+     * return_id => true|false - возвращать или нет идентификатор вставленной записи
+     * @return mixed
+     */
 
-        $table = $table ? $table . '.' : '';
+    // 26-й урок: Добавили возможность $set указывать пустым массивом, подозреваем, что у нас есть что-то в посте.
+    // Тогда достаточно $table, а система сама разберет массив $_POST.
+    final public function add($table, $set = []) {
 
-        $fields = '';
+        $set['fields'] = (is_array($set['fields']) && !empty($set['fields'])) ? $set['fields'] : $_POST;
 
-        foreach ($set['fields'] as $field) {
-            $fields .= $table . $field . ',';
+
+        if(!$set['fields'] && !$set['files']) return false; // Что продолжать если везде - пусто.
+        $set['files'] = (is_array($set['files']) && !empty($set['files'])) ? $set['files'] : false;
+        $set['return_id'] = $set['return_id'] ? true : false;
+        $set['except'] = (is_array($set['except']) && !empty($set['except'])) ? $set['except'] : false;
+
+        // До этого запроса -мы должны принять некий массив вставки. Собирать эти данные будет иной метод -  createInsert().
+        // Mетод вернет fields, values.
+
+        // Наш $insertArr из createInsert BaseModelMethods поппадает сюда. Если что-то пришло :
+        //        $query = "INSERT INTO $table ({$insertArr['fields']}) VALUES ({$insertArr['values']}))";
+        //        Если - нет : false
+        $insertArr = $this->createInsert($set['fields'],  $set['files'], $set['except']);
+        if ($insertArr) {
+            $query = "INSERT INTO $table ({$insertArr['fields']}) VALUES ({$insertArr['values']})";
+            return $this->query($query, 'c', $set['return_id']);
         }
-        return $fields;
+
+        return false;
+
 
     }
 
-    protected function createOrder($set, $table = false)
-    {
+    final public function showColumns($table) {
+        $query = "SHOW COLUMNS FROM $table";
+        $res = $this->query($query);
 
-        $table = $table ? $table . '.' : '';
-
-        $orderBy = '';
-
-        if (is_array($set['order']) && !empty($set['order'])) {
-            $set['order_direction'] = (is_array($set['order_direction']) && !empty($set['order_direction'])) ? $set['order_direction'] : ['ASC'];
-
-            $orderBy = 'ORDER BY ';
-            $directCount = 0;
-            foreach ($set['order'] as $order) {
-                if ($set['order_direction'][$directCount]) {
-                    $orderDirection = strtoupper($set['order_direction'][$directCount]);
-                    $directCount++;
-
-                } else {
-                    $orderDirection = strtoupper($set['order_direction'][$directCount - 1]);
-                }
-
-                if(is_int($order))  $orderBy .= $order . ' ' . $orderDirection . ',';
-                 else $orderBy .= $table . $order . ' ' . $orderDirection . ',';
-
-                //  "ORDER BY id ASC, name DESC"
+        $columns = [];
+        //
+        if($res) {
+            foreach ($res as $row) {
+                $columns[$row['Field']] = $row;
+                //Надо в корень результирующего массива положить ячейку, которая явсляется первичным ключем
+                if ($row['Key'] === 'PRI') $columns['id_row'] = $row['Field'];
             }
-
-            $orderBy = rtrim($orderBy, ',');
         }
 
-        return $orderBy;
+        return $columns;
     }
+    final public function edit($table, $set = []) {
 
-    protected function createWhere($set, $table = false, $instruction = 'WHERE') {
-
-        $table = $table ? $table . '.' : '';
-
-        $where = '';
-
-        if(is_array($set['where']) && !empty($set['where'])) {
-
-            $set['operand'] = (is_array($set['operand']) && !empty($set['operand'])) ? $set['operand'] : ['='];
-            $set['condition'] = (is_array($set['condition']) && !empty($set['condition'])) ? $set['condition'] : ['AND'];
-
-            $where = $instruction;
-
-            $oCount = 0;
-            $cCount = 0;
-
-            foreach ($set['where'] as $key => $item) {
-
-                $where .= ' ';
-                if($set['operand'][$oCount]) {
-                    $operand = $set['operand'][$oCount];
-                    $oCount++;
-                } else {
-                    $operand = $set['operand'][$oCount - 1];
-                }
-
-                if($set['condition'][$cCount]) {
-                    $condition = $set['condition'][$cCount];
-                    $cCount++;
-                } else {
-                    $condition = $set['condition'][$cCount - 1];
-                }
-//                "=<> IN (SELECT * FROM table) NOT LIKE"
-
-                if($operand === 'IN' || $operand === 'NOT IN') {
-
-//                    "SELECT";
-                    if (is_string($item) && strpos($item, 'SELECT') === 0) {
-                        $inStr =  $item;
-                    } else {
-                        if(is_array($item)) $tempItem = $item;
-                            else $tempItem = explode(',', $item);
-
-                        $inStr = '';
-
-                        foreach ($tempItem as $value) {
-                            $inStr .= "'" . addslashes(trim($value)) . "',";
-                        }
-                    }
-
-                    $where .= $table . $key . ' ' . $operand .  ' (' . trim($inStr, ',') . ') ' . $condition;
-                }
-                // Возвращает порядковый номер вхождения в случе нахождения и false - в случае не нахождения.
-                elseif (strpos($operand, 'LIKE') !== false) {
-                    $likeTemplate = explode('%',$operand );
-                    foreach ($likeTemplate as $ltKey => $lt) {
-                        if(!$lt) {
-                            if(!$ltKey) {
-                                $item = '%' . $item;
-                            } else {
-                                $item .= '%';
-
-                            }
-                        }
-                    }
-                    $where .= $table . $key . ' LIKE ' . "'" . addslashes($item) . "' $condition";
-
-                } else {
-                        if (strpos($item, 'SELECT') === 0) {
-                            $where .= $table . $key . $operand . ' (' . $item . ") $condition";
-                        } else {
-                            $where .= $table . $key . $operand . "'" . addslashes($item) . "' $condition";
-
-                        }
-                }
-
-            }
-
-            $where = substr($where, 0, strrpos($where, $condition));
-
-        }
-
-        return $where;
+        $set['fields'] = (is_array($set['fields']) && !empty($set['fields'])) ? $set['fields'] : $_POST;
 
 
-        }
+        if(!$set['fields'] && !$set['files']) return false; // Что продолжать если везде - пусто.
+        $set['files'] = (is_array($set['files']) && !empty($set['files'])) ? $set['files'] : false;
 
-        protected function createJoin($set, $table, $newWhere = false) {
+        $set['except'] = (is_array($set['except']) && !empty($set['except'])) ? $set['except'] : false;
 
-            $fields = '';
-            $join = '';
-            $where = '';
+        if(!$set['all_rows']) {
+            // Метод createWhere() - написан нами настолько хорошо и многофункционально. Что не дополнительных проверок,
+            // не других действий с $set['where'] - мы выполнять не будем - это отлично сделает метод createWhere() - самостоятельно.
+            if($set['where']) {
+                //
+                $where = $this->createWhere($set);
+            } else {
+                // Мы хотим обновить все данные, которые пришли посредством массива $_POST. Но надо найти критерий
+                // по какому мы будем обновлять эти данные в БД.
+                // Мы знаемто, что это должен быть первичный ключ.
 
-            if($set['join']) {
-                $joinTable = $table;
-
-                foreach ($set['join'] as $key => $item) {
-
-                    if(is_int($key)) {
-                        if(!$item['table']) continue;
-                            else $key = $item['table'];
-                    }
-
-                    if ($join) $join .= ' ';
-
-                    if ($item['on']) {
-                        $joinFields = [];
-
-                        switch (2) {
-
-                            case count($item['on']['fields']);
-                                $joinFields = $item['on']['fields'];
-                                break;
-
-                            case count($item['on']);
-                                $joinFields = $item['on'];
-                                break;
-
-                            default:
-                                // continue 2 выведя из switch, перекинет нас на след. итерацию цикла foreach;
-                                continue 2;
-                                break;
-                        }
-
-                        if(!$item['type']) $join .= 'LEFT JOIN ';
-                            else $join .= trim(strtoupper($item['type'])). ' JOIN ';
-
-                        $join .= $key . ' ON ';
-
-                        if($item['on']['table']) $join .= $item['on']['table'];
-                            else $join .= $joinTable;
-
-                        $join .= '.' . $joinFields[0] . '=' . $key . '.' . $joinFields[1];
-
-                        $joinTable = $key;
-
-                        if($newWhere) {
-                            if($item['where']) {
-                                $newWhere = false;
-                            }
-
-                            $groupCondition = 'WHERE';
-
-                        } else {
-                            $groupCondition = $item['group_condition'] ? strtoupper($item['group_condition']) : 'AND';
-                        }
-
-                        $fields .= $this->createFields($item, $key);
-                        $where .= $this->createWhere($item, $key, $groupCondition);
-
-                    }
+                $columns = $this->showColumns($table);
+                if(!$columns) return false;
+                if($columns['id_row'] && $set['fields'][$columns['id_row']]) {
+                 $where = 'WHERE ' . $columns['id_row'] . '=' . $set['fields'][$columns['id_row']];
+                 // Поскольку  у нас автоинкрементное поле, значит не надо его дальше кидать в запрос.
+                 // Поэтому unset $set['fields'][$columns['id_row']]
+                    unset($set['fields'][$columns['id_row']]);
                 }
             }
-            return compact('fields', 'join', 'where');
         }
+        $update = $this->createUpdate($set['fields'],  $set['files'], $set['except']);
+        // Так должен выглядеть запрос UPDATE:  $query = "UPDATE teachers SET name ='Masha', surname = 'Ivanovna' WHERE id = 1";
+        $query = "UPDATE $table SET $update $where";
+
+        return $this->query($query, 'u');
+    }
 }

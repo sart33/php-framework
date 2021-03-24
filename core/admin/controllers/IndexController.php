@@ -34,56 +34,37 @@ class IndexController extends BaseController
 
         $color = ['red', 'blue', 'black'];
 
-        $res = $db->get($table, [
-            'fields' => ['id', 'name'],
-            'where' => ['name' => "O'Raily"],
-            // Чтобы здесь не подавать нумерованные строковые ключи и их разбирать по еще неизвестным каким-то операндам
-//            'operand' => ['IN', '<>'],
-//            'condition' => ['AND', 'OR'],
-            'order' => [1, 'name'],
-            'order_direction' => ['ASC', 'DESC'],
-            'limit' => '1',
-            'join' => [
-                [
-                    // Каждый следующий элемент 'join' - будет присоединяться к предидущему.
+//        $stringC =  json_encode($table);
+//        echo $stringC . '<br>';
+//        echo '<pre>';
+//        print_r(json_decode($stringC));
+//        echo '</pre>';
+        $files = [];
+//        $files['img'] = '';
 
-                    // Сюда, мы должны иметь возможность передавать как асоциативный массив, так и обычный - числовой.
-                    // Именно для этого появляется это поле     'table' => 'join_table1',
-                    'table' => 'join_table1',
-                    'fields' => ['id as j_id', 'name as j_name'],
-                    // Тип присоединения
-                    'type' => 'left',
-                    'where' => ['name' => 'Sasha'],
-                    'operand' => ['='],
-                    'condition' => ['OR'],
-                    //  Признак присоединения/ Будут два варианта. 1. Явно указать к какой таблице присоединять
-                    // (По дефолту предидущая таблица)
-                    'on' => [
-                        'table' => 'teachers',
-                        'fields' => ['id', 'parent_id']
-                    ]
-                ],
-                'join_table2' => [
-                    'table' => 'join_table2',
-                    'fields' => ['id as j2_id', 'name as j2_name'],
-                    // Тип присоединения
-                    'type' => 'left',
-                    'where' => ['name' => 'Sasha'],
-                    'operand' => ['<>'],
-                    'condition' => ['AND'],
-                    //  Признак присоединения/ Будут два варианта. 1. Явно указать к какой таблице присоединять
-                    // (По дефолту предидущая таблица)
-                    'on' => ['id', 'parent_id']
+        // Примерно то, что можно вытянуть из пост массива. Надо понимать что нейм йди - далеко не то, место,
+        // где мы можем хранить первичный ключ.
+        '<input type="hidden" name="id" value="5">';
 
 
+        $_POST['id'] = 8;
+        $_POST['name'] = 'Elena';
+        $_POST['content'] = "<p>New's book</p>";
 
-                ]
-//                // Есть такая ситуация, когда надо стыковать одну и ту же таблицу (многие ко многим - когда ч/з третью таблицу стыкуем себя к себе)
-//
-            ]
+        $res = $db->edit($table
+            , [
+//            'fields' => ['id' => 2, 'name' => 'Svetlana'],
+            'files' => $files,
+//            'where' => ['id' => 1]
         ]);
+//        , [
+//            'fields' => ['name' => 'Katherina Ivanovna', 'content' => 'Hello_two'],
+//            'where' => ['name' => "O'Raily"],
+//            'limit' => '1'
+//        ]);
 
 
+        exit('id ='  .$res['id'] . ' Name = ' . $res['name']);
     }
 
 }
