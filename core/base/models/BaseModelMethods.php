@@ -149,6 +149,7 @@ abstract class BaseModelMethods
         $fields = '';
         $join = '';
         $where = '';
+        $tables = '';
 
         if($set['join']) {
             $joinTable = $table;
@@ -192,6 +193,7 @@ abstract class BaseModelMethods
                     $join .= '.' . $joinFields[0] . '=' . $key . '.' . $joinFields[1];
 
                     $joinTable = $key;
+                    $tables .= ', ' . trim($joinTable);
 
                     if($newWhere) {
                         if($item['where']) {
@@ -210,7 +212,7 @@ abstract class BaseModelMethods
                 }
             }
         }
-        return compact('fields', 'join', 'where');
+        return compact('fields', 'join', 'where', 'tables');
     }
 
     protected function createInsert($fields,  $files, $except) {
@@ -290,7 +292,12 @@ abstract class BaseModelMethods
 
                 if (in_array($value, $this->sqlFunc)) {
                     $update .= $value . ',';
-                } else {
+
+                } elseif($value === null) {
+                    $update .= "NULL" . ',';
+
+                }
+                else {
                     // Все экранируем, потому что вне массива - х/з что может приидти.
                     $update .= "'" . addslashes($value) . "',";
                 }

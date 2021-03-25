@@ -249,4 +249,86 @@ class BaseModel extends BaseModelMethods
 
         return $this->query($query, 'u');
     }
+
+
+    /**
+    @param $table - Таблицы базы даных
+    'fields' => ['id', 'name'],
+    'where' => ['name' => 'masha', 'surname' => 'Sergeevna', 'fio' => 'Andrey', 'car' => 'Porshe', 'color' => $color],
+    'operand' => ['IN', 'LIKE%', '<>', '=', 'NOT IN'],
+    'condition' => [ 'AND', 'OR'],
+    'join'=> [
+    [
+    'table' => 'join_table1',
+    'fields' => ['id as j_id','name as j_name'],
+    'type' => 'left',
+    'where' => ['name' => 'Sasha'],
+    'operand' => ['='],
+    'condition' => ['OR'],
+    'on' => ['id', 'parent_id'],
+     * 'group_condition' => 'AND'
+     *
+    ],
+    'join_table1' => [
+    'table' => 'join_table2',
+    'fields' => ['id as j2_id','name as j2_name'],
+    'type' => 'left',
+    'where' => ['name' => 'Sasha'],
+    'operand' => ['<>'],
+    'condition' => ['AND'],
+    'on' => [
+    'table' => 'teachers',
+    'fields' => ['id', 'parent_id']
+    ]
+    ],
+    ]
+
+
+    ]);
+     */
+
+    public function delete($table, $set) {
+
+        $table = trim($table);
+        $where = $this->createWhere($set, $table);
+        $columns = $this->showColumns($table);
+        // $columns для рабочей таблицы - должны быть в любом случае. Проверяем - если пришли какие-то поля - будем обновлять эти поля .
+        // А если $set['fields'] - не пришли, тогда мы будем удалять что-то из таблицы
+        
+        if(!$columns) return false;
+
+        if(is_array($set['fields']) && !empty($set['fields'])) {
+            // Первое, что проверяем - а не прислали ли сюда поле с первичным ключем.
+            if($columns['id_row']) {
+                // Чтобы удалить элемент из массива - мало знать, что он есть. Надо получить его ключ.
+                // array_search — Осуществляет поиск данного значения в массиве и возвращает ключ первого найденного
+                // элемента в случае удачи или false если не найден
+               $key = array_search($columns['id_row'], $set['fields']);
+               // Если есть ключ, удаляем ячейку его содержащую.
+               if($key !== false) unset($set['fields']['key']);
+
+            }
+            $fields = [];
+            foreach ($set['fields'] as $field) {
+                $fields[$field] = $columns[$field]['Default'];
+            }
+            //
+            $update = $this->createUpdate($fields, false, false);
+
+            $query = "UPDATE $table SET $update $where";
+
+        } else {
+
+            $joinArr = $this->createJoin($set, $table);
+            $join = $joinArr['join'];
+            $joinTables = $joinArr['tables'];
+            // Должны обязательно указать первую нашу $table - иначе ничего не удалится, будет еще и натыкано кучу запятых.
+            // Учитывая что есть $joinTables, которые пришли с запятыми вначале.
+            // А если $joinTables - не будет, то здесбь будет одна таблица и просто сработает полный синтаксис запроса
+            //  $query = "DELETE FROM category, products FROM category LEFT JOIN products ON category.id = products.id WHERE id = 1";
+            $query = 'DELETE ' . $table . $joinTables . ' FROM ' . $table . ' ' . $join . ' ' . $where;
+
+        }
+        return $this->query($query, 'd');
+    }
 }

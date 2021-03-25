@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83816adb-e80b-4016-9a10-6631394c12c5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/core/base/models/BaseModelMethods.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/admin/controllers/IndexController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/IndexController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/base/models/BaseModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/models/BaseModel.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/base/models/BaseModelMethods.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/models/BaseModelMethods.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -316,7 +315,10 @@
       <workItem from="1616429128537" duration="6586000" />
       <workItem from="1616451876326" duration="6760000" />
       <workItem from="1616517021877" duration="1882000" />
-      <workItem from="1616541112003" duration="1172000" />
+      <workItem from="1616541112003" duration="3756000" />
+      <workItem from="1616591236400" duration="599000" />
+      <workItem from="1616609176568" duration="4722000" />
+      <workItem from="1616625679774" duration="6844000" />
     </task>
     <task id="LOCAL-00001" summary="routing use singleton pattern">
       <created>1612921077069</created>
@@ -430,7 +432,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616255941103</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Создали методы добавление данных в БД, и редактирования данных в БД">
+      <created>1616545835959</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1616545835959</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -476,7 +485,8 @@
     <MESSAGE value="Доработали обработку исключений. Сформировали кончтрукцию которая пишет в лог файл. И удалил выброс исключения из автозагрузки (не оч. корректно работал с РНР 7.14. Поскольку используется  reflection - этот выброс можно удалить)" />
     <MESSAGE value="Базовый метод работы с ДБ создали." />
     <MESSAGE value="Создали все методы выборки из базы данных" />
-    <option name="LAST_COMMIT_MESSAGE" value="Создали все методы выборки из базы данных" />
+    <MESSAGE value="Создали методы добавление данных в БД, и редактирования данных в БД" />
+    <option name="LAST_COMMIT_MESSAGE" value="Создали методы добавление данных в БД, и редактирования данных в БД" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
