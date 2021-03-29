@@ -2,10 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83816adb-e80b-4016-9a10-6631394c12c5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/admin/controllers/ShowController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/admin/controllers/IndexController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/IndexController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/base/models/BaseModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/models/BaseModel.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/base/models/BaseModelMethods.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/models/BaseModelMethods.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/base/controllers/BaseMethods.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/controllers/BaseMethods.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/base/exceptions/messages.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/exceptions/messages.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/base/settings/Settings.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/settings/Settings.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,7 +87,7 @@
       </set>
     </option>
   </component>
-  <component name="PhpDebugGeneral" xdebug_show_addresses="true" break_at_first_line="true" detect_path_mappings_from_deployment_configuration="false" ignore_connections_through_unregistered_servers="true" show_user_defined_constants="false" />
+  <component name="PhpDebugGeneral" xdebug_show_addresses="true" break_at_first_line="true" detect_path_mappings_from_deployment_configuration="false" ignore_connections_through_unregistered_servers="true" listening_started="true" show_user_defined_constants="false" />
   <component name="PhpServers">
     <servers>
       <server host="phpauto.loc" id="4c0226b4-e35a-4c8b-a5ea-71de00d2643a" name="phpauto.loc" />
@@ -123,7 +126,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="database.data.extractors.current.export.id" value="Comma-separated (CSV)_id" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../voyts4-com" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../__webshop" />
     <property name="node.js.detected.package.stylelint" value="true" />
     <property name="node.js.path.for.package.stylelint" value="project" />
     <property name="node.js.selected.package.stylelint" value="" />
@@ -318,7 +321,15 @@
       <workItem from="1616541112003" duration="3756000" />
       <workItem from="1616591236400" duration="599000" />
       <workItem from="1616609176568" duration="4722000" />
-      <workItem from="1616625679774" duration="6844000" />
+      <workItem from="1616625679774" duration="7458000" />
+      <workItem from="1616715690889" duration="3857000" />
+      <workItem from="1616771222389" duration="14372000" />
+      <workItem from="1616884777536" duration="2399000" />
+      <workItem from="1616941716182" duration="599000" />
+      <workItem from="1616958649450" duration="4166000" />
+      <workItem from="1616979684576" duration="1982000" />
+      <workItem from="1617027386089" duration="925000" />
+      <workItem from="1617034000635" duration="3919000" />
     </task>
     <task id="LOCAL-00001" summary="routing use singleton pattern">
       <created>1612921077069</created>
@@ -439,7 +450,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616545835959</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Создали методы удаления данных в БД, удаления при этом джойня таблицы или забивая значения null-ом. Методы оттестировали - все работает.">
+      <created>1616633875707</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1616633875707</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -486,7 +504,19 @@
     <MESSAGE value="Базовый метод работы с ДБ создали." />
     <MESSAGE value="Создали все методы выборки из базы данных" />
     <MESSAGE value="Создали методы добавление данных в БД, и редактирования данных в БД" />
-    <option name="LAST_COMMIT_MESSAGE" value="Создали методы добавление данных в БД, и редактирования данных в БД" />
+    <MESSAGE value="Создали методы удаления данных в БД, удаления при этом джойня таблицы или забивая значения null-ом. Методы оттестировали - все работает." />
+    <option name="LAST_COMMIT_MESSAGE" value="Создали методы удаления данных в БД, удаления при этом джойня таблицы или забивая значения null-ом. Методы оттестировали - все работает." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php</url>
+          <line>160</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

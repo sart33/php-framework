@@ -45,7 +45,7 @@ trait BaseMethods
 
         header('Location: ' . $redirect );
 
-        exit;
+
     }
 
     protected function writeLog($message, $file = 'log.txt', $event = 'Fault') {
