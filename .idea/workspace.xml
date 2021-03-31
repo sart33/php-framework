@@ -2,12 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83816adb-e80b-4016-9a10-6631394c12c5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/admin/controllers/ShowController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/admin/expansion/TeachersExpansion.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/admin/controllers/IndexController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/IndexController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/base/controllers/BaseMethods.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/controllers/BaseMethods.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/base/exceptions/messages.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/exceptions/messages.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/admin/controllers/ShowController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/ShowController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/admin/models/Model.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/models/Model.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/base/controllers/RouteController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/controllers/RouteController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/base/controllers/Singleton.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/controllers/Singleton.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/base/models/BaseModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/models/BaseModel.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/base/settings/Settings.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/settings/Settings.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -329,7 +331,10 @@
       <workItem from="1616958649450" duration="4166000" />
       <workItem from="1616979684576" duration="1982000" />
       <workItem from="1617027386089" duration="925000" />
-      <workItem from="1617034000635" duration="3919000" />
+      <workItem from="1617034000635" duration="5039000" />
+      <workItem from="1617050312392" duration="8045000" />
+      <workItem from="1617127185722" duration="5917000" />
+      <workItem from="1617203953041" duration="3441000" />
     </task>
     <task id="LOCAL-00001" summary="routing use singleton pattern">
       <created>1612921077069</created>
@@ -457,7 +462,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616633875707</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Создали и оттестировали: Контроллер показа данных.">
+      <created>1617038125382</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1617038125382</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -505,18 +517,8 @@
     <MESSAGE value="Создали все методы выборки из базы данных" />
     <MESSAGE value="Создали методы добавление данных в БД, и редактирования данных в БД" />
     <MESSAGE value="Создали методы удаления данных в БД, удаления при этом джойня таблицы или забивая значения null-ом. Методы оттестировали - все работает." />
-    <option name="LAST_COMMIT_MESSAGE" value="Создали методы удаления данных в БД, удаления при этом джойня таблицы или забивая значения null-ом. Методы оттестировали - все работает." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php</url>
-          <line>160</line>
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Создали и оттестировали: Контроллер показа данных." />
+    <option name="LAST_COMMIT_MESSAGE" value="Создали и оттестировали: Контроллер показа данных." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

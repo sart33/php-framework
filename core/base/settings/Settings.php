@@ -50,8 +50,8 @@ class Settings
         'text' => ['name', 'phone', 'adress'],
         'textarea' => ['content', 'keywords']
     ];
-
-    private $lalala = 'lalala';
+    // Тут будем хранить путь к директории, где хранятся наши расширения.
+        private $expansion = 'core/admin/expansion';
 
 // Клон и констракт тож удалили
 

@@ -83,81 +83,30 @@ abstract class BaseAdmin extends BaseController
 
     }
 
-    protected function createData($arr = [], $add = true ) {
-        // Если массив $arr - пришел и флаг ($add) - стоит в true,
-        // то то что есть в $arr надо добавить к базовому запросу.
-        // Если false - то работаем только с массивом $arr
-        $fields = [];
-        $order = [];
-        $orderDirection = [];
+    protected function expansion($args = []) {
 
-        if ($add) {
+        //Сначала из таблицы формируем "файл-нейм"?
+//        файл 'StudTeachExpansion' - расширение таблицы 'stud_teach';
+        $fileName = explode('_', $this->table);
+        $className = '';
+        foreach ($fileName as $item) $className .= ucfirst($item);
+        $class = Settings::get('expansion') . '/' .$className . 'Expansion';
+        //Рефлекшеном и записью в лог при выбросе исключения - пользоваться не будем,
+        // потому что каж раз писать в лог это исключение не рационально.
 
-         if(!$this->columns['id_row']) return $this->data = [];
+        // Проверяем поетому так:
+        // Существовует ли файл и доступен ли он для чтения.
+        if(is_readable($_SERVER['DOCUMENT_ROOT'] . PATH . $class . '.php')) {
+            $class = str_replace('/', '\\', $class);
+            // Дальше - создать этот класс. К нему мы будем обращаться неоднократно с точки зрения работы с кодом.
+            // В showController - отобразим, дальше в каком-то иметоде еще. Но, если, в showController - это не принципиально,
+            // то метод эдит будет работать с данными, когда он их получает из БД.
+            // Плюс метод эдит будет еще и модифицировать эти данные - т.е - технически два действия (принять и отдать).
+            // Следовательно если многократно вызывать expansion и не отработать его по шаблону синглтон - получим утечки памяти.
+            $exp = $class::instance();
 
-        // Воспользуемся здесь псевдонимом.
-         $fields[] .= $this->columns['id_row'] . ' as id';
-         if($this->columns['name']) $fields['name'] = 'name';
-            if($this->columns['img']) $fields['img'] = 'img';
-            // В метод get мы присылаем массив. А имена ячейкам массива мы даем.
-            // поскольку проверяя в цикле - есть ли эти ячейки. Если - нет - будем искать пр. name в других записях.
-            // С img - аналогично.
-            if(count($fields) < 3) {
-                foreach ($this->columns as $key => $item) {
-                    if(!$fields['name'] && strpos($key, 'name') !== false) {
-                        $fields['name'] = $key . ' as name';
-                    }
-                    if(!$fields['img'] && strpos($key, 'img') === 0) {
-                        $fields['img'] = $key . ' as img';
-                    }
-                }
-            }
-            if($arr['fields']) {
-                // Склейка массивов.  который в классе Settings находится.
-                $fields = Settings::instance()->arrayMergeRecursive($fields, $arr['fields']);
-            }
-
-            if($this->columns['parent_id']) {
-                if(!in_array('parent_id', $fields))  $fields[] = 'parent_id';
-                    $order[] = 'parent_id';
-                }
-            //Если есть ячейка - позиция в меню - то добаляем ее в $order, чтобы иметь возможность по ней сотртироваться.
-            if($this->columns['menu_position']) $order[] = 'menu_position';
-            //Еще может существовать поле $date. Сортировка по дате.
-            elseif ($this->columns['date']) {
-
-
-                if($order) $orderDirection = ['ASC', 'DESC'];
-                    else $orderDirection = ['DESC'];
-
-                $order[] = 'date';
-                // После этого всего - еще надо склеить два массива.
-            }
-            if($arr['order']) {
-                // Склейка массивов.  который в классе Settings находится.
-                $order = Settings::instance()->arrayMergeRecursive($order, $arr['order']);
-            }
-            if($arr['order_direction']) {
-                // Склейка массивов.  который в классе Settings находится.
-                $orderDirection = Settings::instance()->arrayMergeRecursive($orderDirection, $arr['order_direction']);
-            }
-
-        } else {
-
-            if(!$arr) return $this->data = [];
-
-            $fields = $arr['fields'];
-            $order = $arr['order'];
-            $orderDirection = $arr['orderDirection'];
-
+            $res = $exp->expansion($args);
         }
 
-        $this->data = $this->model->get($this->table, [
-            'fields' => $fields,
-            'order' => $order,
-            'order_direction' => $orderDirection
-        ]);
-
-        exit();
     }
  }
