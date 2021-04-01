@@ -5,6 +5,7 @@ namespace core\admin\controllers;
 
 
 use core\base\settings\Settings;
+use core\base\settings\ShopSettings;
 
 class ShowController extends BaseAdmin
 {
@@ -53,7 +54,7 @@ class ShowController extends BaseAdmin
         if(!$this->columns['id_row']) return $this->data = [];
 
         // Воспользуемся здесь псевдонимом.
-        $fields[] .= $this->columns['id_row'] . ' as id';
+        $fields[] = $this->columns['id_row'] . ' as id';
         if($this->columns['name']) $fields['name'] = 'name';
         if($this->columns['img']) $fields['img'] = 'img';
         // В метод get мы присылаем массив. А имена ячейкам массива мы даем.

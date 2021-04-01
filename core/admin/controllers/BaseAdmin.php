@@ -83,30 +83,55 @@ abstract class BaseAdmin extends BaseController
 
     }
 
-    protected function expansion($args = []) {
+
+    protected function expansion($args = [], $settings = false) {
 
         //Сначала из таблицы формируем "файл-нейм"?
 //        файл 'StudTeachExpansion' - расширение таблицы 'stud_teach';
         $fileName = explode('_', $this->table);
         $className = '';
         foreach ($fileName as $item) $className .= ucfirst($item);
-        $class = Settings::get('expansion') . '/' .$className . 'Expansion';
+        if(!$settings)   {
+            $path = Settings::get('expansion');
+        } elseif(is_object($settings)) {
+            $path = $settings::get('expansion');
+        } else {
+            $path = $settings;
+        }
+        $class = $path  . $className . 'Expansion';
+
+
+
         //Рефлекшеном и записью в лог при выбросе исключения - пользоваться не будем,
         // потому что каж раз писать в лог это исключение не рационально.
 
         // Проверяем поетому так:
         // Существовует ли файл и доступен ли он для чтения.
-        if(is_readable($_SERVER['DOCUMENT_ROOT'] . PATH . $class . '.php')) {
-            $class = str_replace('/', '\\', $class);
-            // Дальше - создать этот класс. К нему мы будем обращаться неоднократно с точки зрения работы с кодом.
-            // В showController - отобразим, дальше в каком-то иметоде еще. Но, если, в showController - это не принципиально,
-            // то метод эдит будет работать с данными, когда он их получает из БД.
-            // Плюс метод эдит будет еще и модифицировать эти данные - т.е - технически два действия (принять и отдать).
-            // Следовательно если многократно вызывать expansion и не отработать его по шаблону синглтон - получим утечки памяти.
-            $exp = $class::instance();
+         if(is_readable($_SERVER['DOCUMENT_ROOT'] . PATH . $class . '.php')) {
+             $class = str_replace('/', '\\', $class);
+             // Дальше - создать этот класс. К нему мы будем обращаться неоднократно с точки зрения работы с кодом.
+             // В showController - отобразим, дальше в каком-то иметоде еще. Но, если, в showController - это не принципиально,
+             // то метод эдит будет работать с данными, когда он их получает из БД.
+             // Плюс метод эдит будет еще и модифицировать эти данные - т.е - технически два действия (принять и отдать).
+             // Следовательно если многократно вызывать expansion и не отработать его по шаблону синглтон - получим утечки памяти.
+             $exp = $class::instance();
 
-            $res = $exp->expansion($args);
+             foreach ($this as $name => $value) {
+                 // Здесь созданы новые сво-ва в них записаны - новые значения и абсолютно никаких ссылок здесь нет.
+//                $exp->$name = &$value;
+                 $exp->$name = &$this->$name;
+             }
+
+             return $exp->expansion($args);
+
+         } else {
+
+             $file = $_SERVER['DOCUMENT_ROOT'] . PATH . $path . $this->table . '.php';
+             extract($args);
+             if(is_readable($file)) return include $file;
+
         }
-
+        return false;
     }
+
  }

@@ -51,7 +51,7 @@ class Settings
         'textarea' => ['content', 'keywords']
     ];
     // Тут будем хранить путь к директории, где хранятся наши расширения.
-        private $expansion = 'core/admin/expansion';
+        private $expansion = 'core/admin/expansion/';
 
 // Клон и констракт тож удалили
 
