@@ -40,7 +40,16 @@ class ShowController extends BaseAdmin
 
     }
     protected function outputData() {
+//        func_get_args() — Возвращает массив, содержащий аргументы функции
+//        Возвращает массив, в котором каждый элемент является копией соответствующего члена списка аргументов пользовательской функции.
+        $args = func_get_arg(0);
+        $vars = $args ? $args : [];
+        //Путь к нашему представлению
+        if(!$this->template) $this->template = ADMIN_TEMPLATE . 'show';
+        //Контент сформировали. Еще нужен хедер и футер.
+        $this->content = $this->render($this->template, $vars);
 
+        return parent::outputData();
     }
 
     protected function createData($arr = []) {

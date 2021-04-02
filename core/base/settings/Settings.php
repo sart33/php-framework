@@ -44,14 +44,21 @@ class Settings
         ],
     ];
 
+    // Тут будем хранить путь к директории, где хранятся наши расширения.
+    private $expansion = 'core/admin/expansion/';
+
     private $defaultTable = 'teachers';
+
+    private $projectTables = [
+        'teachers' => ['name' => 'Учителя', 'img' => 'pages.webp'],
+        'students' => ['name' => 'Ученики']
+    ];
 
     private $templateArr = [
         'text' => ['name', 'phone', 'adress'],
         'textarea' => ['content', 'keywords']
     ];
-    // Тут будем хранить путь к директории, где хранятся наши расширения.
-        private $expansion = 'core/admin/expansion/';
+
 
 // Клон и констракт тож удалили
 

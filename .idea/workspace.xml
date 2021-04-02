@@ -2,11 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83816adb-e80b-4016-9a10-6631394c12c5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/core/admin/views/includes/footer.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/admin/views/includes/header.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/admin/views/show.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/admin/controllers/ShowController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/ShowController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/admin/expansion/TeachersExpansion.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/expansion/TeachersExpansion1.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/admin/expansion/TeachersExpansion.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/expansion/TeachersExpansion.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/admin/views/layout.tpl.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/views/layouts/default.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/base/controllers/BaseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/controllers/BaseController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/base/settings/Settings.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/settings/Settings.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/base/settings/internal_settings.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/settings/internal_settings.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,21 +137,22 @@
     <property name="node.js.path.for.package.stylelint" value="project" />
     <property name="node.js.selected.package.stylelint" value="" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="reference.webide.settings.project.settings.php.debug" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/web" />
-      <recent name="$PROJECT_DIR$/core/admin" />
-      <recent name="$PROJECT_DIR$/core/base" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/core/user/controllers" />
       <recent name="$PROJECT_DIR$/core/base/exceptions" />
       <recent name="$PROJECT_DIR$/views" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/core/admin/views/layouts" />
+      <recent name="$PROJECT_DIR$/core/admin/views" />
+      <recent name="$PROJECT_DIR$/" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/web" />
     </key>
   </component>
   <component name="RunManager" selected="PHP Script.index.php">
@@ -329,6 +337,11 @@
       <workItem from="1616979684576" duration="1982000" />
       <workItem from="1617027386089" duration="925000" />
       <workItem from="1617034000635" duration="3919000" />
+      <workItem from="1617317623624" duration="3118000" />
+      <workItem from="1617372612448" duration="1204000" />
+      <workItem from="1617380044587" duration="2071000" />
+      <workItem from="1617396392823" duration="639000" />
+      <workItem from="1617398421350" duration="6741000" />
     </task>
     <task id="LOCAL-00001" summary="routing use singleton pattern">
       <created>1612921077069</created>
@@ -456,7 +469,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616633875707</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Создали систему для проектного расширения нашего фреймворка.">
+      <created>1617314217787</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1617314217787</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -504,18 +524,8 @@
     <MESSAGE value="Создали все методы выборки из базы данных" />
     <MESSAGE value="Создали методы добавление данных в БД, и редактирования данных в БД" />
     <MESSAGE value="Создали методы удаления данных в БД, удаления при этом джойня таблицы или забивая значения null-ом. Методы оттестировали - все работает." />
-    <option name="LAST_COMMIT_MESSAGE" value="Создали методы удаления данных в БД, удаления при этом джойня таблицы или забивая значения null-ом. Методы оттестировали - все работает." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/core/admin/expansion/teachers.php</url>
-          <line>2</line>
-          <option name="timeStamp" value="38" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Создали систему для проектного расширения нашего фреймворка." />
+    <option name="LAST_COMMIT_MESSAGE" value="Создали систему для проектного расширения нашего фреймворка." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

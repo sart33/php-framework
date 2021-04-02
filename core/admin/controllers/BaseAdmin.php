@@ -17,6 +17,8 @@ abstract class BaseAdmin extends BaseController
     protected $columns;
     protected $data;
 
+    protected $adminPath;
+
     protected $menu;
     protected $title;
 
@@ -32,6 +34,8 @@ abstract class BaseAdmin extends BaseController
 
         if (!$this->model) $this->model = Model::instance();
         if (!$this->menu) $this->menu = Settings::get('projectTables');
+        if(!$this->adminPath) $this->adminPath = PATH . Settings::get('routes')['admin']['alias'] . '/';
+
         // Заголовки ответов браузеру. При работе с изображениями - могут возникнуть большие проблемы,
         // связанные с кешированием файлов браузером. поэтому будем сразу отправлять заголовки что не надо это кешировать.
         // Метод отправляющий заголовки с запретом на кеширование.
@@ -40,6 +44,10 @@ abstract class BaseAdmin extends BaseController
     }
 
     protected function outputData() {
+        $this->header = $this->render(ADMIN_TEMPLATE . 'includes/header');
+        $this->footer = $this->render(ADMIN_TEMPLATE . 'includes/footer');
+
+        return $this->render(ADMIN_TEMPLATE . 'layouts/default');
 
     }
 
