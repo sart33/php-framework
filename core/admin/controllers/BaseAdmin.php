@@ -22,6 +22,9 @@ abstract class BaseAdmin extends BaseController
     protected $menu;
     protected $title;
 
+    protected $translate;
+
+    protected $blocks = [];
 
     // Этот абстрактный класс будет отвечать за сборку нашей страницы.
     // За подключения хедера и футера.
@@ -44,6 +47,17 @@ abstract class BaseAdmin extends BaseController
     }
 
     protected function outputData() {
+
+        if(!$this->content) {
+            //        func_get_args() — Возвращает массив, содержащий аргументы функции
+//        Возвращает массив, в котором каждый элемент является копией соответствующего члена списка аргументов пользовательской функции.
+            $args = func_get_arg(0);
+            $vars = $args ? $args : [];
+            //Путь к нашему представлению
+            if(!$this->template) $this->template = ADMIN_TEMPLATE . 'show';
+            //Контент сформировали. Еще нужен хедер и футер.
+            $this->content = $this->render($this->template, $vars);
+        }
         $this->header = $this->render(ADMIN_TEMPLATE . 'includes/header');
         $this->footer = $this->render(ADMIN_TEMPLATE . 'includes/footer');
 
@@ -70,7 +84,7 @@ abstract class BaseAdmin extends BaseController
         self::inputData();
     }
 
-    protected function createTableData() {
+    protected function createTableData($settings = false) {
         // Если до этого свойство $thisTable -нигде не было заполненно - то надо будет в этом методе с ним поработать.
         if(!$this->table) {
             // Таблица может приидти в свойстве parameters - которое сформировал роут контроллер.
@@ -81,7 +95,10 @@ abstract class BaseAdmin extends BaseController
 //               ]; - в этом случае ($this->parameters['teachers']; - выдаст false.
             // А $this->parameters - будет true / Т.е. Эта проверка подойдет
             if($this->parameters) $this->table = array_keys($this->parameters)[0];
-                else $this->table = Settings::get('defaultTable');
+                else {
+                    if(!$settings) $settings = Settings::instance();
+                    $this->table = $settings::get('defaultTable');
+                }
 
 
         }
@@ -140,6 +157,47 @@ abstract class BaseAdmin extends BaseController
 
         }
         return false;
+    }
+
+    protected function createOutputData($settings = false) {
+        if(!$settings) $settings = Settings::instance();
+
+        $blocks = $settings->get('blockNeedle');
+        $this->translate = $settings->get('translate');
+
+        if(!$blocks || !is_array($blocks)) {
+           foreach ($this->columns as $name => $item ) {
+                if($name === 'id_row') continue;
+                if(!$this->translate[$name]) $this->translate[$name][] = $name;
+
+                $this->blocks[0][] =  $name;
+
+           }
+           return;
+
+        }
+        $default = array_keys($blocks)[0];
+        foreach ($this->columns as $name => $item) {
+            if($name === 'id_row') continue;
+
+            $insert = false;
+
+            foreach ($blocks as $block => $value) {
+                if(!array_key_exists($block, $this->blocks))  $this->blocks[$block] = [];
+                if(in_array($name, $value)) {
+                    $this->blocks[$block][] = $name;
+                    $insert = true;
+                    break;
+                }
+            }
+
+            if(!$insert) $this->blocks[$default][] = $name;
+            if(!$this->translate[$name]) $this->translate[$name][] = $name;
+
+
+        }
+        return;
+
     }
 
  }

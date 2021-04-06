@@ -2,18 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83816adb-e80b-4016-9a10-6631394c12c5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/core/admin/views/includes/footer.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/admin/views/includes/header.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/admin/views/show.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/admin/controllers/AddController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/admin/controllers/ShowController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/controllers/ShowController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/admin/expansion/TeachersExpansion.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/expansion/TeachersExpansion.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/admin/views/layout.tpl.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin/views/layouts/default.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/base/controllers/BaseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/controllers/BaseController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/base/settings/Settings.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/settings/Settings.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/base/settings/internal_settings.php" beforeDir="false" afterPath="$PROJECT_DIR$/core/base/settings/internal_settings.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,6 +75,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="HighlightingSettingsPerFile">
@@ -526,6 +521,17 @@
     <MESSAGE value="Создали методы удаления данных в БД, удаления при этом джойня таблицы или забивая значения null-ом. Методы оттестировали - все работает." />
     <MESSAGE value="Создали систему для проектного расширения нашего фреймворка." />
     <option name="LAST_COMMIT_MESSAGE" value="Создали систему для проектного расширения нашего фреймворка." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/core/admin/controllers/BaseAdmin.php</url>
+          <line>198</line>
+          <option name="timeStamp" value="62" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

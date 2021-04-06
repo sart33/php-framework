@@ -15,7 +15,7 @@ class ShowController extends BaseAdmin
         // Вроде норм, но у нас еще будут плагины.
         // Плагины будут наследоваться от этих контроллеров (сейчас конкретно - это ShowController).
         // Поетому в BaseAdmin - создадим небольшой метод, который просто будет вызывать метод самого BaseAdmin.
-        $this->execBase();
+        if(!$this->userId) $this->execBase();
         // Этот метод ничего не будет возвращать - поскольку это служебные методы они заполнняют свойства наших классов.
         $this->createTableData();
 
@@ -38,18 +38,6 @@ class ShowController extends BaseAdmin
         // Это будет часто используемый метод, потому и пишем его в BaseAdmin.
         return $this->expansion(get_defined_vars());
 
-    }
-    protected function outputData() {
-//        func_get_args() — Возвращает массив, содержащий аргументы функции
-//        Возвращает массив, в котором каждый элемент является копией соответствующего члена списка аргументов пользовательской функции.
-        $args = func_get_arg(0);
-        $vars = $args ? $args : [];
-        //Путь к нашему представлению
-        if(!$this->template) $this->template = ADMIN_TEMPLATE . 'show';
-        //Контент сформировали. Еще нужен хедер и футер.
-        $this->content = $this->render($this->template, $vars);
-
-        return parent::outputData();
     }
 
     protected function createData($arr = []) {

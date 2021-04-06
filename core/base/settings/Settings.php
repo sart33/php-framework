@@ -54,9 +54,19 @@ class Settings
         'students' => ['name' => 'Ученики']
     ];
 
+    private $translate = [
+        'name' => ['Название', 'Не более 100 символов']
+    ];
+
     private $templateArr = [
         'text' => ['name', 'phone', 'adress'],
         'textarea' => ['content', 'keywords']
+    ];
+
+    private $blockNeedle = [
+        'vg-rows' => [],
+        'vg-img' => ['id'],
+        'vg-content' => ['name']
     ];
 
 
