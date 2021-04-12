@@ -15,12 +15,15 @@ class ShopSettings
 
     private $routes = [
         'plugins' => [
-            'dir' => false,
+            'path' => 'core/plugins/',
+            'hrUrl' => false,
+            'dir' => 'controllers',
             'routes' => [
+                'karree' => 'OffersKarree/getImport'
 
-            ]
+
+            ],
         ],
-
     ];
     private $templateArr = [
         'text' => ['price', 'short'],

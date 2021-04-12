@@ -209,6 +209,7 @@ abstract class BaseModel extends BaseModelMethods
 
         return $columns;
     }
+
     final public function edit($table, $set = []) {
 
         $set['fields'] = (is_array($set['fields']) && !empty($set['fields'])) ? $set['fields'] : $_POST;

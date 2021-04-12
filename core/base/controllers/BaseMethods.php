@@ -4,6 +4,8 @@
 namespace core\base\controllers;
 
 
+use core\base\settings\Settings;
+
 trait BaseMethods
 {
 
@@ -55,6 +57,19 @@ trait BaseMethods
         $str = $event . ': ' . $dateTime->format('d-m-Y G:i:s') . ' - ' . $message . "\r\n";
         // Пишем данные в файл. Конкретно - дописываем в конец файла.
         file_put_contents('log/' . $file, $str, FILE_APPEND);
+    }
+
+    protected function createRadio($settings = false) {
+        if(!$settings) $settings = Settings::instance();
+        $radio = $settings->get('radio');
+
+        if($radio) {
+            foreach ($this->columns as $name => $item) {
+                if($radio[$name]) {
+                    $this->foreignData[$name] = $radio[$name];
+                }
+            }
+        }
     }
 
 }

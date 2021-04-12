@@ -58,6 +58,16 @@ class Settings
         'name' => ['Название', 'Не более 100 символов']
     ];
 
+    private $radio = [
+        //нет(0) - это нулевой элемент массива. Да (1) - это первый элемент массива.
+        'visible' => ['Нет', 'Да', 'default' => 'Да']
+    ];
+
+    private $rootItems = [
+        'name' => 'Корневая',
+        'tables' => ['articles']
+    ];
+
     private $templateArr = [
         'text' => ['name', 'phone', 'adress'],
         'textarea' => ['content', 'keywords']
