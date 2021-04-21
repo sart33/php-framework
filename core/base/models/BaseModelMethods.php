@@ -13,7 +13,7 @@ abstract class BaseModelMethods
         //Если в $set['fields'] - что-то пришло тогда он им и останется. Если нет - то появится * (т.е. - выбрать все)
         $set['fields'] = (is_array($set['fields']) && !empty($set['fields'])) ? $set['fields'] : ['*'];
 
-        $table = $table ? $table . '.' : '';
+        $table = ($table && !$set['no_concat']) ? $table . '.' : '';
 
         $fields = '';
 
@@ -27,7 +27,7 @@ abstract class BaseModelMethods
     protected function createOrder($set, $table = false)
     {
 
-        $table = $table ? $table . '.' : '';
+        $table = ($table && !$set['no_concat']) ? $table . '.' : '';
 
         $orderBy = '';
 
@@ -59,9 +59,15 @@ abstract class BaseModelMethods
 
     protected function createWhere($set, $table = false, $instruction = 'WHERE') {
 
-        $table = $table ? $table . '.' : '';
+        $table = ($table && !$set['no_concat']) ? $table . '.' : '';
 
         $where = '';
+        // Существуют ситуации - когда $where надо передать просто строкой,
+        // например: поскольку просто неудобно формировать массив.
+        if(is_string($set['where'])) {
+            return $instruction  . ' ' . trim($set['where']);
+
+        }
 
         if(is_array($set['where']) && !empty($set['where'])) {
 
@@ -215,60 +221,90 @@ abstract class BaseModelMethods
         return compact('fields', 'join', 'where', 'tables');
     }
 
+
     protected function createInsert($fields,  $files, $except) {
 
         $insertArr = [];
-        if($fields) {
 
-            foreach ($fields as $row => $value) {
-                // Закинем в except , например - 3 поля не добавлять (они относятся не к таблице в БД.)
-                if ($except && in_array($row, $except)) continue; // Переходим на след итерацию цикла - более нам тут -
-                // ничего не нужно
-                //Далее в $insertArr добавить наше поле 'fields' (как мы решили в нашем методе add())
-                $insertArr['fields'] .= $row . ',';
+        $insertArr['fields'] = '(';
 
-                // Дальше необходимо осуществить проверку, - не пришла ли у нас функция $value.
-                // Тримить $value - нельзя - потому что из БД может прииидти целая статья, которая будет нач. с табуляции (4-х пробелов).
-                // И тогда верстка статьйи полезет.
+        $arrayType = array_keys($fields)[0];
 
-                if (in_array($value, $this->sqlFunc)) {
-                    $insertArr['values'] .= $value . ',';
-                } else {
-                    // Все экранируем, потому что вне массива - х/з что может приидти.
-                    $insertArr['values'] .= "'" . addslashes($value) . "',";
+        if(is_int($arrayType)) {
+
+            $checkFields = false;
+
+            $countFields = 0;
+
+            foreach ($fields as $i => $item) {
+//            for($i = $arrayType; $i < count($fields); $i++) {
+
+                $insertArr['values'] .= '(';
+
+                if (!$countFields) $countFields = count($item);
+
+                $j = 0;
+
+                foreach ($item as $key => $value) {
+                    if($except && in_array($key, $except)) continue;
+                    if(!$checkFields) $insertArr['fields'] .= $key . ',';
+                    if(in_array($value, $this->sqlFunc)) {
+                            $insertArr['values'] .= $value . ',';
+                    } elseif ($value === 'NULL' || $value === NULL) {
+                        $insertArr['values'] .= "NULL" . ',';
+                    } else {
+                        $insertArr['values'] .= "'" . addslashes($value) . "',";
+                    }
+                    $j++;
+
+                    // Если он меньше $countFields. То мы должны догнать до $countFields с пустыми строками.
+
+                    if($j === $countFields) break;
                 }
+                if ($j < $countFields) {
+                    for (; $j< $countFields; $j++) {
+                        $insertArr['values'] .=  "NULL" . ',';
+
+                    }
+                }
+                $insertArr['values'] =  rtrim($insertArr['values'],',') .'),';
+
+                if(!$checkFields) $checkFields = true;
 
             }
+        } else {
+            $insertArr['values'] = '(';
 
-        }
-        // Пробежимся теперь по массиву $files
-        if($files) {
+            if($fields) {
+                foreach ($fields as $key => $value) {
+                    if($except && in_array($key, $except)) continue;
+                    $insertArr['fields'] .= $key . ',';
+                    if(in_array($value, $this->sqlFunc)) {
+                        $insertArr['values'] .= $value . ',';
+                    } elseif ($value === 'NULL' || $value === NULL) {
+                        $insertArr['values'] .= "NULL" . ',';
+                    } else {
+                        $insertArr['values'] .= "'" . addslashes($value) . "',";
+                    }
 
-            foreach ($files as $row => $file) {
+                }
+            }
 
-              //  'img' = 'icon.png'; - все норм - храним строкой. А, если галерея??
-              // Либо в виде JSON строки:  JSON строка - это строковое представление массива.
-                // Это может быть полезно при сохранении массива в базе данных.
+            if($files) {
 
-//                 Проверяем - масив ли file или нет. Галерею будем передвать в виде массива данных.
-//
-//                     $file = 'main_ing.webp';
-//                   $file['gallery_img'] = ['1.jpg', '2.png, 3.webp'];
-//                'img' = 'icon.png';
-//                    '"teacher_str"'
+                foreach ($files as $row => $file) {
+                    $insertArr['fields'] .= $row . ',';
 
-                $insertArr['fields'] .= $row . ',';
-
-                // Если $file массив то в $insertArr['values'] добавим к строке value JSON строку с экранированием слешей
-                if(is_array($file)) $insertArr['values'] .= "'" . addslashes(json_encode($file)) . "',";
+                    if(is_array($file)) $insertArr['values'] .= "'" . addslashes(json_encode($file)) . "',";
                     else $insertArr['values'] .= "'" . addslashes($file) . "',";
+                }
             }
+            $insertArr['values'] = rtrim($insertArr['values'], ',') . ')';
 
         }
-        // дело в том, что переменные $key и $arr новые, возникающие на каждой итерации цикла.
-        // Если будем работать только с ними $insertArr - не будет модицицироваться
-        // И стандартно - обрезаем запятую
-        foreach($insertArr as $key => $arr) $insertArr[$key] = rtrim($arr, ',');
+        $insertArr['fields'] =  rtrim($insertArr['fields'],',') . ')';
+
+        $insertArr['values'] =  rtrim($insertArr['values'],',');
 
         return $insertArr;
 

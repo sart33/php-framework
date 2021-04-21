@@ -23,6 +23,9 @@ class RouteController extends BaseController
     {
         $adress_str = $_SERVER['REQUEST_URI'];
 
+        if($_SERVER['QUERY_STRING']) {
+            $adress_str = substr($adress_str, 0, strpos($adress_str, $_SERVER['QUERY_STRING']) - 1);
+        }
         //В пременную $path мы сохранили обрезанную строку в которой содержится имя выполнения скрипта.
          // Если константа PATH не совпадет с именем скрипта - не подгрузятся ни контроллеры ни изображения, - ничего. В этой ситуации нет смысла продолжать другие действия   **
         //

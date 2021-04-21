@@ -4,7 +4,7 @@
 namespace core\admin\controllers;
 
 
-//use core\admin\models\Model;
+use core\admin\models\Model;
 use core\base\models\BaseModel;
 use core\base\settings\Settings;
 
@@ -20,12 +20,36 @@ class AddController extends BaseAdmin
 
         $this->createForeignData();
 
+        $this->createMenuPosition();
+
         $this->createRadio();
 
         $this->createOutputData();
 
+        $this->manyAdd();
+
+        exit;
 
 //        $this->model->showForeiginKeys($this->table);
+    }
+
+    protected function manyAdd() {
+
+        $fields = [
+          'name' => 'lenochka', 'menu_position' => 1
+        ];
+
+        $files =
+            [
+//                'img' => '3.webp',
+            'gallery_img' => ['4.webp', '5.webp', '6.webp']
+        ];
+
+        $this->model->add('teachers', [
+            'fields' => $fields,
+            'files' => $files
+            ]);
+
     }
 
     protected function createForeignProperty($arr, $rootItems) {
@@ -105,6 +129,73 @@ class AddController extends BaseAdmin
 
         }
     return;
+   }
+
+   protected function createMenuPosition($settings = false) {
+    // Если тут пусто, - то все -дальше не едем)
+        if($this->columns['menu_position']) {
+            if(!$settings) $settings = Settings::instance();
+            $rootItems = $settings->get('rootItems');
+            // Дальше проверяем - есть ли внашей таблице parent_id, или просто - взять и посчитать записи.
+            if($this->columns['parent_id']) {
+                // Если есть корневая директория - то надо посчитать сколько есть корневых директорий, т.е. - сколько полей.
+                // Проверяем наличие нашей таблице в $rootItems['tables']
+                if(in_array($this->table, $rootItems['tables'])) {
+                    $where = 'parent_id IS NULL OR parent_id = 0';
+                } else {
+                    // Если есть parent_id то по логике должны быть и внешние ключи. Вот и запросим эти внешние ключи.
+                    $parent = $this->model->showForeignKeys($this->table, 'parent_id')[0]; // Тут мы пришли к причине зачем,
+                    // в методе модели был указа ключ $key/ Здесь - мы подадим второй необязательный параметр!:
+                    //ключ - ограничивающий нашу выборку и уточняющий ее.
+                    // Дальше придет AND COLUMN_NAME = 'parent_id' .
+                    // Именно parent_id - должен ссылаться на какие-то внешние таблицы,
+                    // потому что именно по этому критерию - мы и определяем родителя.
+                    if($parent) {
+                        if($this->table === $parent['REFERENCED_COLUMN_NAME']) {
+                            $where = 'parent_id IS NULL OR parent_id = 0';
+
+                        } else {
+                            // Мы должны получить поля из вот этой таблицы REFERENCED_TABLE_NAME. Даст возможность наиболее
+                            // удобный результат получить для первичной сортировки
+                            $columns = $this->model->showColumns($parent['REFERENCED_TABLE_NAME']);
+                            //Если есть parent_id - сортировку таблиц запускаем именно по нему. Если parent_id - нет,
+                            // запускаем сортировку по REFERENCED_COLUMN_NAME
+                            if ($columns['parent_id']) $order[] = 'parent_id';
+                            else $order[] = $parent['REFERENCED_COLUMN_NAME'];
+                            //   Дальше надо получить идентификатор самой первого элемента вот в этой таблице -
+                            // исходя из нашей сортировки
+                            $id = $this->model->get($parent['REFERENCED_TABLE_NAME'], [
+                                //Надо получить колонку $parent['REFERENCED_TABLE_NAME'](ее значение).
+                                // Чтобы исходя из него - посчитать количество элементов нашей таблицы.
+                                'fields' => [$parent['REFERENCED_COLUMN_NAME']],
+                                'order' => $order,
+                                'limit' => '1'
+                                // Вернуть нам надо нулевой элемент той выборки, которая пришла и вернуть то поле,
+                                // которое и запрашивали - $parent['REFERENCED_COLUMN_NAME']. Возвращаем (Ложим в id):
+                            ])[0][$parent['REFERENCED_COLUMN_NAME']];
+
+                            if ($id) $where = ['parent_id' => $id];
+                        }
+
+                    } else {
+                        // Если родитель не пришел, то
+                        $where = 'parent_id IS NULL OR parent_id = 0';
+
+                    }
+                }
+            }
+            $menuPos = $this->model->get($this->table, [
+                'fields' => ['COUNT(*) as count'],
+                'where' => $where,
+                'no_concat' => true
+                ])[0]['count'] + 1;
+
+            for($i = 1; $i <= $menuPos; $i++) {
+                $this->foreignData['menu_position'][$i-1]['id'] = $i;
+                $this->foreignData['menu_position'][$i-1]['name'] = $i;
+            }
+        }
+        return;
    }
 
 }

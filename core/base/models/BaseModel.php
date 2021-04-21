@@ -77,6 +77,7 @@ abstract class BaseModel extends BaseModelMethods
         /**
         @param $table - Таблицы базы даных
         'fields' => ['id', 'name'],
+         * 'no_concat' => false/true //Если true - не присоединять имя таблицы к полям и where. По дефолту - false
         'where' => ['name' => 'masha', 'surname' => 'Sergeevna', 'fio' => 'Andrey', 'car' => 'Porshe', 'color' => $color],
         'operand' => ['IN', 'LIKE%', '<>', '=', 'NOT IN'],
         'condition' => [ 'AND', 'OR'],
@@ -183,12 +184,10 @@ abstract class BaseModel extends BaseModelMethods
         //        $query = "INSERT INTO $table ({$insertArr['fields']}) VALUES ({$insertArr['values']}))";
         //        Если - нет : false
         $insertArr = $this->createInsert($set['fields'],  $set['files'], $set['except']);
-        if ($insertArr) {
-            $query = "INSERT INTO $table ({$insertArr['fields']}) VALUES ({$insertArr['values']})";
-            return $this->query($query, 'c', $set['return_id']);
-        }
 
-        return false;
+        $query = "INSERT INTO $table {$insertArr['fields']} VALUES {$insertArr['values']}";
+        return $this->query($query, 'c', $set['return_id']);
+
 
 
     }
