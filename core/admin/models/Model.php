@@ -14,16 +14,17 @@ class Model extends BaseModel
     public function showForeignKeys($table, $key = false) {
 
         $db = DB_NAME;
-
-        if($key) $where = "AND COLUMN_NAME = '$key' LIMIT 1";
-
         $query = "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME 
                 FROM information_schema.KEY_COLUMN_USAGE
                 WHERE TABLE_SCHEMA = '$db' AND TABLE_NAME = '$table' AND
-                CONSTRAINT_NAME <> 'PRIMARY' AND REFERENCED_TABLE_NAME is not NULL $where";
+                CONSTRAINT_NAME <> 'PRIMARY' AND REFERENCED_TABLE_NAME is not NULL";
+
+        if(!empty($key)) {
+            $where = " AND COLUMN_NAME = '$key' LIMIT 1";
+            $query .= $where;
+        }
 
         return $this->query($query);
-
 
     }
 

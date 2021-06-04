@@ -11,9 +11,9 @@ abstract class BaseModelMethods
     protected function createFields($set, $table = false)
     {
         //Если в $set['fields'] - что-то пришло тогда он им и останется. Если нет - то появится * (т.е. - выбрать все)
-        $set['fields'] = (is_array($set['fields']) && !empty($set['fields'])) ? $set['fields'] : ['*'];
+        $set['fields'] = (!empty($set['fields']) && is_array($set['fields'])) ? $set['fields'] : ['*'];
 
-        $table = ($table && !$set['no_concat']) ? $table . '.' : '';
+        $table = (isset($table) && empty($set['no_concat'])) ? $table . '.' : '';
 
         $fields = '';
 
@@ -27,17 +27,19 @@ abstract class BaseModelMethods
     protected function createOrder($set, $table = false)
     {
 
-        $table = ($table && !$set['no_concat']) ? $table . '.' : '';
+        $table = (isset($table) && empty($set['no_concat'])) ? $table . '.' : '';
 
         $orderBy = '';
 
-        if (is_array($set['order']) && !empty($set['order'])) {
-            $set['order_direction'] = (is_array($set['order_direction']) && !empty($set['order_direction'])) ? $set['order_direction'] : ['ASC'];
+        if(!empty($set['order']) && is_array($set['order']))  {
+
+            $set['order_direction'] = ((!empty($set['order_direction'])) && is_array($set['order_direction'])) ? $set['order_direction'] : ['ASC'];
 
             $orderBy = 'ORDER BY ';
             $directCount = 0;
+
             foreach ($set['order'] as $order) {
-                if ($set['order_direction'][$directCount]) {
+                if(!empty($set['order_direction'][$directCount])) {
                     $orderDirection = strtoupper($set['order_direction'][$directCount]);
                     $directCount++;
 
@@ -45,10 +47,10 @@ abstract class BaseModelMethods
                     $orderDirection = strtoupper($set['order_direction'][$directCount - 1]);
                 }
 
+                // Если число то без конкатенации таблицы
                 if(is_int($order))  $orderBy .= $order . ' ' . $orderDirection . ',';
                 else $orderBy .= $table . $order . ' ' . $orderDirection . ',';
 
-                //  "ORDER BY id ASC, name DESC"
             }
 
             $orderBy = rtrim($orderBy, ',');
@@ -59,37 +61,33 @@ abstract class BaseModelMethods
 
     protected function createWhere($set, $table = false, $instruction = 'WHERE') {
 
-        $table = ($table && !$set['no_concat']) ? $table . '.' : '';
+        $table = (isset($table) && empty($set['no_concat'])) ? $table . '.' : '';
 
         $where = '';
         // Существуют ситуации - когда $where надо передать просто строкой,
         // например: поскольку просто неудобно формировать массив.
-        if(is_string($set['where'])) {
+        if(!empty($set['where']) && is_string($set['where'])) {
             return $instruction  . ' ' . trim($set['where']);
-
         }
+        if(!empty($set['where']) && is_array($set['where'])) {
 
-        if(is_array($set['where']) && !empty($set['where'])) {
-
-            $set['operand'] = (is_array($set['operand']) && !empty($set['operand'])) ? $set['operand'] : ['='];
-            $set['condition'] = (is_array($set['condition']) && !empty($set['condition'])) ? $set['condition'] : ['AND'];
+            $set['operand'] = (!empty($set['operand']) && is_array($set['operand'])) ? $set['operand'] : ['='];
+            $set['condition'] = (!empty($set['condition']) && is_array($set['condition'])) ? $set['condition'] : ['AND'];
 
             $where = $instruction;
-
             $oCount = 0;
             $cCount = 0;
-
             foreach ($set['where'] as $key => $item) {
 
                 $where .= ' ';
-                if($set['operand'][$oCount]) {
+                if(!empty($set['operand'][$oCount])) {
                     $operand = $set['operand'][$oCount];
                     $oCount++;
                 } else {
                     $operand = $set['operand'][$oCount - 1];
                 }
 
-                if($set['condition'][$cCount]) {
+                if(!empty($set['condition'][$cCount])) {
                     $condition = $set['condition'][$cCount];
                     $cCount++;
                 } else {
@@ -119,8 +117,8 @@ abstract class BaseModelMethods
                 elseif (strpos($operand, 'LIKE') !== false) {
                     $likeTemplate = explode('%',$operand );
                     foreach ($likeTemplate as $ltKey => $lt) {
-                        if(!$lt) {
-                            if(!$ltKey) {
+                        if(empty($lt)) {
+                            if(empty($ltKey)) {
                                 $item = '%' . $item;
                             } else {
                                 $item .= '%';
@@ -132,7 +130,7 @@ abstract class BaseModelMethods
 
                 } else {
                     if (strpos($item, 'SELECT') === 0) {
-                        $where .= $table . $key . $operand . ' (' . $item . ") $condition";
+                        $where .= $table . $key . $operand . '(' . $item . ") $condition";
                     } else {
                         $where .= $table . $key . $operand . "'" . addslashes($item) . "' $condition";
 
@@ -157,59 +155,53 @@ abstract class BaseModelMethods
         $where = '';
         $tables = '';
 
-        if($set['join']) {
+        if(isset($set['join'])) {
             $joinTable = $table;
 
             foreach ($set['join'] as $key => $item) {
-
+                // Проверяем, является ли массив числовым
                 if(is_int($key)) {
-                    if(!$item['table']) continue;
+                    // Если не указано с какой таблицей ему джойниться - то переходим на следующую итерацию.
+                    if(empty($item['table'])) continue;
+                    // В противном случае в $key поместим $item['table']
                     else $key = $item['table'];
                 }
+                if(!empty($join)) $join .= ' ';
 
-                if ($join) $join .= ' ';
+                if(isset($item['on']) && !empty($item['on'])) {
+                    if(isset($item['on']['fields']) && is_array($item['on']['fields']) && count($item['on']['fields']) == 2) {
+                        $joinFields = $item['on']['fields'];
 
-                if ($item['on']) {
-                    $joinFields = [];
+                    } elseif (count($item['on']) == 2) {
 
-                    switch (2) {
-
-                        case count($item['on']['fields']);
-                            $joinFields = $item['on']['fields'];
-                            break;
-
-                        case count($item['on']);
-                            $joinFields = $item['on'];
-                            break;
-
-                        default:
-                            // continue 2 выведя из switch, перекинет нас на след. итерацию цикла foreach;
-                            continue 2;
-                            break;
+                        $joinFields = $item['on'];
+                    } else {
+                        continue;
                     }
 
-                    if(!$item['type']) $join .= 'LEFT JOIN ';
+                    if(empty($item['type'])) $join .= 'LEFT JOIN ';
                     else $join .= trim(strtoupper($item['type'])). ' JOIN ';
 
                     $join .= $key . ' ON ';
 
-                    if($item['on']['table']) $join .= $item['on']['table'];
+                    if(!empty($item['on']['table'])) $join .= $item['on']['table'];
                     else $join .= $joinTable;
 
                     $join .= '.' . $joinFields[0] . '=' . $key . '.' . $joinFields[1];
 
                     $joinTable = $key;
+
                     $tables .= ', ' . trim($joinTable);
 
-                    if($newWhere) {
-                        if($item['where']) {
+                    if(!empty($newWhere)) {
+                        if(!empty($item['where'])) {
                             $newWhere = false;
                         }
 
                         $groupCondition = 'WHERE';
 
                     } else {
-                        $groupCondition = $item['group_condition'] ? strtoupper($item['group_condition']) : 'AND';
+                        $groupCondition = !empty($item['group_condition']) ? strtoupper($item['group_condition']) : 'AND';
                     }
 
                     $fields .= $this->createFields($item, $key);
@@ -227,6 +219,7 @@ abstract class BaseModelMethods
         $insertArr = [];
 
         $insertArr['fields'] = '(';
+        $insertArr['values'] = '';
 
         $arrayType = array_keys($fields)[0];
 
@@ -234,23 +227,24 @@ abstract class BaseModelMethods
 
             $checkFields = false;
 
-            $countFields = 0;
+//            $countFields = 0;
 
             foreach ($fields as $i => $item) {
-//            for($i = $arrayType; $i < count($fields); $i++) {
 
                 $insertArr['values'] .= '(';
 
-                if (!$countFields) $countFields = count($item);
+                if(empty($countFields)) $countFields = count($item);
 
                 $j = 0;
 
-                foreach ($item as $key => $value) {
-                    if($except && in_array($key, $except)) continue;
-                    if(!$checkFields) $insertArr['fields'] .= $key . ',';
+                foreach ($item as $row => $value) {
+                    if(!empty($except) && in_array($row, $except)) continue;
+
+                    if ($checkFields === false) $insertArr['fields'] .= $row . ',';
+
                     if(in_array($value, $this->sqlFunc)) {
                             $insertArr['values'] .= $value . ',';
-                    } elseif ($value === 'NULL' || $value === NULL) {
+                    } elseif ($value == 'NULL' || $value === NULL) {
                         $insertArr['values'] .= "NULL" . ',';
                     } else {
                         $insertArr['values'] .= "'" . addslashes($value) . "',";
@@ -275,35 +269,39 @@ abstract class BaseModelMethods
         } else {
             $insertArr['values'] = '(';
 
-            if($fields) {
-                foreach ($fields as $key => $value) {
-                    if($except && in_array($key, $except)) continue;
-                    $insertArr['fields'] .= $key . ',';
+            if(!empty($fields)) {
+
+                foreach ($fields as $row => $value) {
+
+                    if(!empty($except) && in_array($row, $except)) continue;
+
+                    $insertArr['fields'] .= $row . ',';
+
                     if(in_array($value, $this->sqlFunc)) {
                         $insertArr['values'] .= $value . ',';
-                    } elseif ($value === 'NULL' || $value === NULL) {
+                    } elseif ($value == 'NULL' || $value === NULL) {
                         $insertArr['values'] .= "NULL" . ',';
                     } else {
                         $insertArr['values'] .= "'" . addslashes($value) . "',";
                     }
-
                 }
             }
 
-            if($files) {
+            if(!empty($files)) {
 
                 foreach ($files as $row => $file) {
                     $insertArr['fields'] .= $row . ',';
 
                     if(is_array($file)) $insertArr['values'] .= "'" . addslashes(json_encode($file)) . "',";
                     else $insertArr['values'] .= "'" . addslashes($file) . "',";
+                    if(!empty($except) && in_array($row, $except)) continue;
+
                 }
             }
             $insertArr['values'] = rtrim($insertArr['values'], ',') . ')';
-
         }
-        $insertArr['fields'] =  rtrim($insertArr['fields'],',') . ')';
 
+        $insertArr['fields'] =  rtrim($insertArr['fields'],',') . ')';
         $insertArr['values'] =  rtrim($insertArr['values'],',');
 
         return $insertArr;
@@ -314,10 +312,12 @@ abstract class BaseModelMethods
     protected function createUpdate($fields, $files, $except) {
 
         $update = '';
-        if($fields) {
+
+        if(!empty($fields)) {
+
             foreach($fields as $row => $value) {
 
-                if($except && in_array($row, $except)) continue;
+                if (!empty($except) && in_array($row, $except)) continue; // Переход на след итерацию
 
                 // Дальше необходимо осуществить проверку, - не пришла ли у нас функция $value.
                 // Тримить $value - нельзя - потому что из БД может прииидти целая статья, которая будет нач. с табуляции (4-х пробелов).
@@ -326,12 +326,11 @@ abstract class BaseModelMethods
                 // Дальше,  в нашу переменную $update Мы должны вставить поле.
                 $update .= $row . '=';
 
-                if (in_array($value, $this->sqlFunc)) {
+                if (in_array($value, $this->sqlFunc) === true) {
                     $update .= $value . ',';
 
-                } elseif($value === null) {
+                } elseif ($value === null) {
                     $update .= "NULL" . ',';
-
                 }
                 else {
                     // Все экранируем, потому что вне массива - х/з что может приидти.
@@ -342,7 +341,7 @@ abstract class BaseModelMethods
         }
 
         // Пробежимся теперь по массиву $files
-        if($files) {
+        if(!empty($files)) {
 
             foreach ($files as $row => $file) {
 

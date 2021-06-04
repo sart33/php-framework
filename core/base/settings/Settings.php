@@ -33,8 +33,15 @@ class Settings
         'user' => [
             'path' => 'core/user/controllers/',
             'hrUrl' => true,
+            //site - Контроллер;
+            //
+            //input - метод собирающий данные.
+            //
+            //output - метод отдающий views
             'routes' => [
             ]
+            //при отсутствии методов либо контроллера - подключаются дефолтные
+
 
         ],
         'default' => [
@@ -50,12 +57,18 @@ class Settings
     private $defaultTable = 'teachers';
 
     private $projectTables = [
-        'teachers' => ['name' => 'Учителя', 'img' => 'pages.webp'],
-        'students' => ['name' => 'Ученики']
+        'teachers' => ['name' => 'Учителя', 'img' => 'teacher.png'],
+        'students' => ['name' => 'Ученики', 'img' => 'student.png']
+    ];
+
+    private $templateArr = [
+        'text' => ['name', 'phone', 'adress'],
+        'textarea' => ['content', 'keywords']
     ];
 
     private $translate = [
-        'name' => ['Название', 'Не более 100 символов']
+        'name' => ['Название', 'Не более 100 символов'],
+        'content' => []
     ];
 
     private $radio = [
@@ -66,11 +79,6 @@ class Settings
     private $rootItems = [
         'name' => 'Корневая',
         'tables' => ['teachers', 'articles']
-    ];
-
-    private $templateArr = [
-        'text' => ['name', 'phone', 'adress'],
-        'textarea' => ['content', 'keywords']
     ];
 
     private $blockNeedle = [
@@ -86,23 +94,24 @@ class Settings
     // Удалили - перекочевал в трейт
 
 
-        static public function get($property) {
+        static public function get($property)
+        {
             return self::instance()->$property;
         }
 
 
         /*** склейка массивов***/
-        public function clueProperties($class){
+        public function clueProperties($class)
+        {
             $baseProperties = [];
             foreach ($this as $name => $item) {
                 $property = $class::get($name);
-                $baseProperties[$name] = $property;
+//                $baseProperties[$name] = $property;
                 if(is_array($property) && is_array($item)) {
-
                     $baseProperties[$name] = $this->arrayMergeRecursive($this->$name, $property);
                     continue;
                 }
-                if(!$property) $baseProperties[$name] = $this->$name;
+                if(!isset($property)) $baseProperties[$name] = $this->$name;
             }
             return $baseProperties;
         }
@@ -110,8 +119,7 @@ class Settings
     /***  Рекурсивный метод склейки массивов, массивы с одинаковыми числовыми ключами - добавляет, с текстовыми- перезаписывает  ***/
     public function arrayMergeRecursive() {
 
-        $arrays = func_get_args();
-
+    $arrays = func_get_args();
         $base = array_shift($arrays);
 
         foreach ($arrays as $array) {
@@ -125,9 +133,7 @@ class Settings
                     }
                     $base[$key] = $value;
                 }
-
             }
-
         }
         return $base;
     }

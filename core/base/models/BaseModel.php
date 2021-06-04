@@ -44,7 +44,7 @@ abstract class BaseModel extends BaseModelMethods
 
             case 'r':
                 // num_rows - это свойство нашего объекта $result
-                if ($result->num_rows) {
+                if(isset($result->num_rows)) {
                     $res = [];
 
                     for ($i = 0; $i < $result->num_rows; $i++) {
@@ -74,82 +74,66 @@ abstract class BaseModel extends BaseModelMethods
         }
     }
 
-        /**
-        @param $table - Таблицы базы даных
-        'fields' => ['id', 'name'],
-         * 'no_concat' => false/true //Если true - не присоединять имя таблицы к полям и where. По дефолту - false
-        'where' => ['name' => 'masha', 'surname' => 'Sergeevna', 'fio' => 'Andrey', 'car' => 'Porshe', 'color' => $color],
-        'operand' => ['IN', 'LIKE%', '<>', '=', 'NOT IN'],
-        'condition' => [ 'AND', 'OR'],
-        'order' => [1, 'name'],
-        'order_direction' => ['ASC', 'DESC'],
-        'limit' => '1',
-        'join'=> [
-        [
-        'table' => 'join_table1',
-        'fields' => ['id as j_id','name as j_name'],
-        'type' => 'left',
-        'where' => ['name' => 'Sasha'],
-        'operand' => ['='],
-        'condition' => ['OR'],
-        'on' => ['id', 'parent_id'],
-         * 'group_condition' => 'AND'
-         *
-        ],
-        'join_table1' => [
-        'table' => 'join_table2',
-        'fields' => ['id as j2_id','name as j2_name'],
-        'type' => 'left',
-        'where' => ['name' => 'Sasha'],
-        'operand' => ['<>'],
-        'condition' => ['AND'],
-        'on' => [
-        'table' => 'teachers',
-        'fields' => ['id', 'parent_id']
-        ]
-        ],
-        ]
+    /**
+     * @param $table - Таблицы базы даных
+     * @param array $set
+     * 'fields' => ['id', 'name'],
+     * 'no_concat' => false/true //Если true - не присоединять имя таблицы к полям и where. По дефолту - false
+     * 'where' => ['name' => 'masha', 'surname' => 'Sergeevna', 'fio' => 'Andrey', 'car' => 'Porshe', 'color' => $color],
+     * 'operand' => ['IN', 'LIKE%', '<>', '=', 'NOT IN'],
+    'condition' => [ 'AND', 'OR'],
+    'order' => [1, 'name'],
+    'order_direction' => ['ASC', 'DESC'],
+    'limit' => '1',
+    'join'=> [
+    [
+     *  'table' => 'join_table1',
+     *  'fields' => ['id as j_id','name as j_name'],
+     *  'type' => 'left',
+     *  'where' => ['name' => 'Sasha'],
+     *  'operand' => ['='],
+     *  'condition' => ['OR'],
+     *  'on' => ['id', 'parent_id'],
+     *  'group_condition' => 'AND'
+     *
+    ],
+    'join_table1' => [
+    'table' => 'join_table2',
+    'fields' => ['id as j2_id','name as j2_name'],
+    'type' => 'left',
+    'where' => ['name' => 'Sasha'],
+    'operand' => ['<>'],
+    'condition' => ['AND'],
+    'on' => [
+    'table' => 'teachers',
+    'fields' => ['id', 'parent_id']
+    ]
+    ],
+    ]
 
 
     ]);
-         */
+     */
+
     // Сюда придет некий массив данных - понятный для контроллера
-    final public function get($table, $set = [])
-    {
-        //А наша модель эти параметры разберет, преобразует в SQL запрос. SQL запрос  - отправят в
-        // (for ($i=0; $i < $result->num_rows; $i++) {
-        //                        $res[] = $result->fetch_assoc();
-        //                    }
-
-        //(стр 44). Тут соберется в понятный для индексного контроллера вид ( core\admin\controllers\IndexController) и
-        // передаст в переменную $res
-
-        // Т.е. Вся работа с ДБ идет через модели
-
-
+    final public function get($table, $set = [])  {
+        //А наша модель эти параметры разберет, преобразует в SQL запрос.
         $fields = $this->createFields($set, $table);
-
         $order = $this->createOrder($set, $table);
-
         $where = $this->createWhere($set, $table);
-
         if(!$where) $newWhere = true;
         else $newWhere = false;
         $joinArr = $this->createJoin($set, $table, $newWhere);
-
+        // Ячейки массива джойнов
         $fields .= $joinArr['fields'];
         $join = $joinArr['join'];
         $where .= $joinArr['where'];
-
-//        "id,name,fio,"
-
+        // Запятые режем в конце
         $fields = rtrim($fields, ',');
-
-        $limit = $set['limit'] ? 'LIMIT ' . $set['limit'] : '';
+        $limit = isset($set['limit']) ? 'LIMIT ' . $set['limit'] : '';
 
         $query = "SELECT $fields FROM $table $join $where $order $limit";
 
-//        exit($query);
         return $this->query($query);
 
     }
@@ -169,13 +153,13 @@ abstract class BaseModel extends BaseModelMethods
     // Тогда достаточно $table, а система сама разберет массив $_POST.
     final public function add($table, $set = []) {
 
-        $set['fields'] = (is_array($set['fields']) && !empty($set['fields'])) ? $set['fields'] : $_POST;
+        $set['fields'] = (!empty($set['fields']) && is_array($set['fields'])) ? $set['fields'] : $_POST;
+        $set['files'] = (!empty($set['files']) && is_array($set['files'])) ? $set['files'] : false;
 
+        if(empty($set['fields']) && empty($set['files'])) return false; // Что продолжать если везде - пусто.
 
-        if(!$set['fields'] && !$set['files']) return false; // Что продолжать если везде - пусто.
-        $set['files'] = (is_array($set['files']) && !empty($set['files'])) ? $set['files'] : false;
-        $set['return_id'] = $set['return_id'] ? true : false;
-        $set['except'] = (is_array($set['except']) && !empty($set['except'])) ? $set['except'] : false;
+        $set['return_id'] = isset($set['return_id']) ? true : false;
+        $set['except'] = (!empty($set['except']) && is_array($set['except'])) ? $set['except'] : false;
 
         // До этого запроса -мы должны принять некий массив вставки. Собирать эти данные будет иной метод -  createInsert().
         // Mетод вернет fields, values.
@@ -192,38 +176,26 @@ abstract class BaseModel extends BaseModelMethods
 
     }
 
-    final public function showColumns($table) {
-        $query = "SHOW COLUMNS FROM $table";
-        $res = $this->query($query);
-
-        $columns = [];
-        //
-        if($res) {
-            foreach ($res as $row) {
-                $columns[$row['Field']] = $row;
-                //Надо в корень результирующего массива положить ячейку, которая явсляется первичным ключем
-                if ($row['Key'] === 'PRI') $columns['id_row'] = $row['Field'];
-            }
-        }
-
-        return $columns;
-    }
 
     final public function edit($table, $set = []) {
 
-        $set['fields'] = (is_array($set['fields']) && !empty($set['fields'])) ? $set['fields'] : $_POST;
+        $set['fields'] = (!empty($set['fields']) && is_array($set['fields'])) ? $set['fields'] : $_POST;
+        $set['files'] = (!empty($set['files']) && is_array($set['files'])) ? $set['files'] : false;
 
+        if(empty($set['fields']) && empty($set['files'])) return false;
 
-        if(!$set['fields'] && !$set['files']) return false; // Что продолжать если везде - пусто.
-        $set['files'] = (is_array($set['files']) && !empty($set['files'])) ? $set['files'] : false;
+        $set['except'] = (!empty($set['except']) && is_array($set['except'])) ? $set['except'] : false;
 
-        $set['except'] = (is_array($set['except']) && !empty($set['except'])) ? $set['except'] : false;
-
-        if(!$set['all_rows']) {
+        if(empty($set['all_rows'])) {
             // Метод createWhere() - написан нами настолько хорошо и многофункционально. Что не дополнительных проверок,
             // не других действий с $set['where'] - мы выполнять не будем - это отлично сделает метод createWhere() - самостоятельно.
-            if($set['where']) {
-                //
+            if(!empty($set['where'])) {
+                // Мы хотим обновить все данные, которые пришли посредством массива $_POST.
+                // Но надо найти критерий по какому мы будем обновлять эти данные в БД.
+                // Мы знаем то, что это должен быть первичный ключ.
+
+                // Примерно то, что можно вытянуть из пост массива (name="id")
+//                '<input type="hidden" name="id" value="5">';
                 $where = $this->createWhere($set);
             } else {
                 // Мы хотим обновить все данные, которые пришли посредством массива $_POST. Но надо найти критерий
@@ -231,8 +203,8 @@ abstract class BaseModel extends BaseModelMethods
                 // Мы знаемто, что это должен быть первичный ключ.
 
                 $columns = $this->showColumns($table);
-                if(!$columns) return false;
-                if($columns['id_row'] && $set['fields'][$columns['id_row']]) {
+                if(empty($columns)) return false;
+                if(!empty($columns['id_row']) && !empty($set['fields'][$columns['id_row']])) {
                  $where = 'WHERE ' . $columns['id_row'] . '=' . $set['fields'][$columns['id_row']];
                  // Поскольку  у нас автоинкрементное поле, значит не надо его дальше кидать в запрос.
                  // Поэтому unset $set['fields'][$columns['id_row']]
@@ -240,8 +212,9 @@ abstract class BaseModel extends BaseModelMethods
                 }
             }
         }
-        $update = $this->createUpdate($set['fields'],  $set['files'], $set['except']);
-        // Так должен выглядеть запрос UPDATE:  $query = "UPDATE teachers SET name ='Masha', surname = 'Ivanovna' WHERE id = 1";
+        $update = $this->createUpdate($set['fields'], $set['files'], $set['except']);
+
+        //Вот так выстраивается запрос. Вот так наш метод будет выстраивать его эллементы
         $query = "UPDATE $table SET $update $where";
 
         return $this->query($query, 'u');
@@ -249,21 +222,23 @@ abstract class BaseModel extends BaseModelMethods
 
 
     /**
-    @param $table - Таблицы базы даных
-    'fields' => ['id', 'name'],
-    'where' => ['name' => 'masha', 'surname' => 'Sergeevna', 'fio' => 'Andrey', 'car' => 'Porshe', 'color' => $color],
-    'operand' => ['IN', 'LIKE%', '<>', '=', 'NOT IN'],
-    'condition' => [ 'AND', 'OR'],
-    'join'=> [
+     * @param $table - Таблицы базы даных
+     * @param array $set
+     * 'fields' => ['id', 'name'],
+     * 'where' => ['name' => 'masha', 'surname' => 'Sergeevna', 'fio' => 'Andrey', 'car' => 'Porshe', 'color' => $color],
+     * 'operand' => ['IN', 'LIKE%', '<>', '=', 'NOT IN'],
+     * 'condition' => [ 'AND', 'OR'],
+     * 'limit' => '1',
+     *  'join'=> [
     [
-    'table' => 'join_table1',
-    'fields' => ['id as j_id','name as j_name'],
-    'type' => 'left',
-    'where' => ['name' => 'Sasha'],
-    'operand' => ['='],
-    'condition' => ['OR'],
-    'on' => ['id', 'parent_id'],
-     * 'group_condition' => 'AND'
+     *  'table' => 'join_table1',
+     *  'fields' => ['id as j_id','name as j_name'],
+     *  'type' => 'left',
+     *  'where' => ['name' => 'Sasha'],
+     *  'operand' => ['='],
+     *  'condition' => ['OR'],
+     *  'on' => ['id', 'parent_id'],
+     *  'group_condition' => 'AND'
      *
     ],
     'join_table1' => [
@@ -291,21 +266,23 @@ abstract class BaseModel extends BaseModelMethods
         $columns = $this->showColumns($table);
         // $columns для рабочей таблицы - должны быть в любом случае. Проверяем - если пришли какие-то поля - будем обновлять эти поля .
         // А если $set['fields'] - не пришли, тогда мы будем удалять что-то из таблицы
-        
-        if(!$columns) return false;
 
-        if(is_array($set['fields']) && !empty($set['fields'])) {
+        if(empty($columns)) return false;
+
+        if(!empty($set['fields']) && is_array($set['fields'])) {
             // Первое, что проверяем - а не прислали ли сюда поле с первичным ключем.
+            // Поле с первичным ключем мы - выкидуем из массива и не будем его апдейтить
             if($columns['id_row']) {
                 // Чтобы удалить элемент из массива - мало знать, что он есть. Надо получить его ключ.
                 // array_search — Осуществляет поиск данного значения в массиве и возвращает ключ первого найденного
                 // элемента в случае удачи или false если не найден
                $key = array_search($columns['id_row'], $set['fields']);
                // Если есть ключ, удаляем ячейку его содержащую.
-               if($key !== false) unset($set['fields']['key']);
-
+               if($key !== false) unset($set['fields'][$key]);
             }
+
             $fields = [];
+
             foreach ($set['fields'] as $field) {
                 $fields[$field] = $columns[$field]['Default'];
             }
@@ -327,5 +304,23 @@ abstract class BaseModel extends BaseModelMethods
 
         }
         return $this->query($query, 'd');
+    }
+
+
+    final public function showColumns($table) {
+        $query = "SHOW COLUMNS FROM $table";
+        $res = $this->query($query);
+
+        $columns = [];
+        //
+        if(!empty($res)) {
+            foreach ($res as $row) {
+                $columns[$row['Field']] = $row;
+                //Надо в корень результирующего массива положить ячейку, которая явсляется первичным ключем
+                if ($row['Key'] === 'PRI') $columns['id_row'] = $row['Field'];
+            }
+        }
+
+        return $columns;
     }
 }

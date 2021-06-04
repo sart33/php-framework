@@ -20,11 +20,12 @@ class RouteException extends \Exception
 
         $this->messages = include 'messages.php';
 
-        $error = $this->getMessage() ? $this->getMessage() : $this->messages($this->getCode());
+        $error = !empty($this->getMessage()) ? $this->getMessage() : $this->messages[$this->getCode()];
 
         $error .= "\r\n" . 'file ' . $this->getFile() . "\r\n" . 'In line ' . $this->getLine() . "\r\n";
 
-      //  if($this->messages[$this->getCode()]) $this->message = $this->messages[$this->getCode()];
+
+        if (!empty($this->messages[$this->getCode()])) $this->message = $this->messages[$this->getCode()];
 
         $this->writeLog($error);
     }

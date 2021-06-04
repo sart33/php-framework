@@ -15,7 +15,7 @@ class ShowController extends BaseAdmin
         // Вроде норм, но у нас еще будут плагины.
         // Плагины будут наследоваться от этих контроллеров (сейчас конкретно - это ShowController).
         // Поетому в BaseAdmin - создадим небольшой метод, который просто будет вызывать метод самого BaseAdmin.
-        if(!$this->userId) $this->execBase();
+        if(empty($this->userId)) $this->execBase();
         // Этот метод ничего не будет возвращать - поскольку это служебные методы они заполнняют свойства наших классов.
         $this->createTableData();
 
@@ -48,7 +48,7 @@ class ShowController extends BaseAdmin
 
 
 
-        if(!$this->columns['id_row']) return $this->data = [];
+        if (empty($this->columns['id_row'])) return $this->data = [];
 
         // Воспользуемся здесь псевдонимом.
         $fields[] = $this->columns['id_row'] . ' as id';
@@ -59,41 +59,39 @@ class ShowController extends BaseAdmin
         // С img - аналогично.
         if(count($fields) < 3) {
             foreach ($this->columns as $key => $item) {
-                if(!$fields['name'] && strpos($key, 'name') !== false) {
+                if (empty($fields['name']) && strpos($key, 'name') !== false) {
                     $fields['name'] = $key . ' as name';
                 }
-                if(!$fields['img'] && strpos($key, 'img') === 0) {
+                if (empty($fields['img']) && strpos($key, 'img') === 0) {
                     $fields['img'] = $key . ' as img';
                 }
             }
         }
-        if($arr['fields']) {
+        if (!empty($arr['fields'])) {
             if (is_array($arr['fields'])) {
                 // Склейка массивов.  который в классе Settings находится.
                 $fields = Settings::instance()->arrayMergeRecursive($fields, $arr['fields']);
-
             } else {
                 $fields[] = $arr['fields'];
             }
-
         }
 
-        if($this->columns['parent_id']) {
+        if (!empty($this->columns['parent_id'])) {
             if(!in_array('parent_id', $fields))  $fields[] = 'parent_id';
             $order[] = 'parent_id';
         }
         //Если есть ячейка - позиция в меню - то добаляем ее в $order, чтобы иметь возможность по ней сотртироваться.
-        if($this->columns['menu_position']) $order[] = 'menu_position';
+        if (!empty($this->columns['menu_position'])) $order[] = 'menu_position';
         //Еще может существовать поле $date. Сортировка по дате.
-        elseif ($this->columns['date']) {
+        elseif (!empty($this->columns['date'])) {
 
-            if($order) $orderDirection = ['ASC', 'DESC'];
+            if (!empty($order)) $orderDirection = ['ASC', 'DESC'];
             else $orderDirection[] = 'DESC';
 
             $order[] = 'date';
             // После этого всего - еще надо склеить два массива.
         }
-        if($arr['order']) {
+        if (!empty($arr['order'])) {
             // если массив- клеим
             if(is_array($arr['order'])) {
                 // Склейка массивов.  который в классе Settings находится.
@@ -104,8 +102,7 @@ class ShowController extends BaseAdmin
             }
 
         }
-        if($arr['order_direction']) {
-            // если массив- клеим
+        if (!empty($arr['order_direction'])) {
             if(is_array($arr['order_direction'])) {
                 // Склейка массивов.  который в классе Settings находится.
                 $orderDirection = Settings::instance()->arrayMergeRecursive($orderDirection, $arr['order_direction']);

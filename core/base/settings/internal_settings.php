@@ -25,13 +25,16 @@ const ADMIN_CSS_JS = [
 ];
 
 const USER_CSS_JS = [
-    'styles' => [],
-    'scripts' => []
+    'styles' => ['css/style.css'],
+    'scripts' => ['js/style.js']
 ];
 use core\base\exceptions\RouteException;
 function autoloadMainClasses($className) {
     $className = str_replace('\\', '/', $className);
-    include_once $className . '.php';
+
+    if (!@include_once $className . '.php') {
+        throw new RouteException('Invalid filename for include - ' . $className);
+    }
 
 }
 spl_autoload_register('autoloadMainClasses');

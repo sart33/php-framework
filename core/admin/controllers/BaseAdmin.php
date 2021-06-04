@@ -12,7 +12,6 @@ use core\base\settings\Settings;
 abstract class BaseAdmin extends BaseController
 {
     protected $model;
-
     protected $table;
     protected $columns;
     protected $data;
@@ -24,7 +23,6 @@ abstract class BaseAdmin extends BaseController
     protected $title;
 
     protected $translate;
-
     protected $blocks = [];
 
     // Этот абстрактный класс будет отвечать за сборку нашей страницы.
@@ -36,9 +34,9 @@ abstract class BaseAdmin extends BaseController
         $this->init(true);
         $this->title = 'VG engine';
 
-        if (!$this->model) $this->model = Model::instance();
-        if (!$this->menu) $this->menu = Settings::get('projectTables');
-        if(!$this->adminPath) $this->adminPath = PATH . Settings::get('routes')['admin']['alias'] . '/';
+        if (empty($this->model)) $this->model = Model::instance();
+        if (empty($this->menu)) $this->menu = Settings::get('projectTables');
+        if (empty($this->adminPath)) $this->adminPath = PATH . Settings::get('routes')['admin']['alias'] . '/';
 
         // Заголовки ответов браузеру. При работе с изображениями - могут возникнуть большие проблемы,
         // связанные с кешированием файлов браузером. поэтому будем сразу отправлять заголовки что не надо это кешировать.
@@ -49,13 +47,13 @@ abstract class BaseAdmin extends BaseController
 
     protected function outputData() {
 
-        if(!$this->content) {
+        if(empty($this->content)) {
             //        func_get_args() — Возвращает массив, содержащий аргументы функции
 //        Возвращает массив, в котором каждый элемент является копией соответствующего члена списка аргументов пользовательской функции.
             $args = func_get_arg(0);
-            $vars = $args ? $args : [];
+            $vars = (!empty($args)) ? $args : [];
             //Путь к нашему представлению
-            if(!$this->template) $this->template = ADMIN_TEMPLATE . 'show';
+//            if(!$this->template) $this->template = ADMIN_TEMPLATE . 'show';
             //Контент сформировали. Еще нужен хедер и футер.
             $this->content = $this->render($this->template, $vars);
         }
@@ -73,7 +71,7 @@ abstract class BaseAdmin extends BaseController
         // Этот заголовок - исключительно, для IE. post-chek - говорит IE о том, что ему необходимо проверить данные обязательно,
         // после того как он эти данные загрузит. Покажет пользователю данные - а дальше их все-рвно надо проверить.
         // pre-chek - говорит, что данные необходимо обязательно проверить перед показом кеша. Два этих значения выставленные в ноль скажут браузеру, что ему необходимо загружать эти данныее в обязательном порядке.
-        header("Cache-Control: post-chek=0, pre-chek = 0");
+        header("Cache-Control: post-check=0, pre-check=0");
 
         // Ранеее могли видеть еще два заголовка:
 //        header("Expires: data"); // - давно устарел и его полностью переопределяет "Cache-Control".
@@ -87,7 +85,7 @@ abstract class BaseAdmin extends BaseController
 
     protected function createTableData($settings = false) {
         // Если до этого свойство $thisTable -нигде не было заполненно - то надо будет в этом методе с ним поработать.
-        if(!$this->table) {
+        if(empty($this->table)) {
             // Таблица может приидти в свойстве parameters - которое сформировал роут контроллер.
             // И надо проверить - пришло ли что-то в параметр. Пришло - ключ нулевого элемента параметров- и есть наша таблица.
             // Не пришло ничего - значит надо откуда-то эту табличку тащить.
@@ -95,17 +93,17 @@ abstract class BaseAdmin extends BaseController
 //                   'teachers' => ''
 //               ]; - в этом случае ($this->parameters['teachers']; - выдаст false.
             // А $this->parameters - будет true / Т.е. Эта проверка подойдет
-            if($this->parameters) $this->table = array_keys($this->parameters)[0];
+            if(!empty($this->parameters)) $this->table = array_keys($this->parameters)[0];
                 else {
-                    if(!$settings) $settings = Settings::instance();
+                    if(empty($settings)) $settings = Settings::instance();
                     $this->table = $settings::get('defaultTable');
                 }
 
-
         }
+
         $this->columns = $this->model->showColumns($this->table);
 
-        if(!$this->columns) new RouteException('no fields in this table - ' . $this->table, 2);
+        if(empty($this->columns)) new RouteException('no fields in this table - ' . $this->table, 2);
 
     }
 
@@ -117,16 +115,15 @@ abstract class BaseAdmin extends BaseController
         $fileName = explode('_', $this->table);
         $className = '';
         foreach ($fileName as $item) $className .= ucfirst($item);
-        if(!$settings)   {
+        if($settings === false)  {
             $path = Settings::get('expansion');
         } elseif(is_object($settings)) {
             $path = $settings::get('expansion');
         } else {
             $path = $settings;
         }
+
         $class = $path  . $className . 'Expansion';
-
-
 
         //Рефлекшеном и записью в лог при выбросе исключения - пользоваться не будем,
         // потому что каж раз писать в лог это исключение не рационально.
@@ -153,7 +150,9 @@ abstract class BaseAdmin extends BaseController
          } else {
 
              $file = $_SERVER['DOCUMENT_ROOT'] . PATH . $path . $this->table . '.php';
+
              extract($args);
+
              if(is_readable($file)) return include $file;
 
         }
@@ -161,22 +160,22 @@ abstract class BaseAdmin extends BaseController
     }
 
     protected function createOutputData($settings = false) {
-        if(!$settings) $settings = Settings::instance();
+        if(!is_object($settings)) $settings = Settings::instance();
 
         $blocks = $settings->get('blockNeedle');
         $this->translate = $settings->get('translate');
 
-        if(!$blocks || !is_array($blocks)) {
-           foreach ($this->columns as $name => $item ) {
+        if(empty($blocks) || !is_array($blocks)) {
+            foreach ($this->columns as $name => $item ) {
                 if($name === 'id_row') continue;
-                if(!$this->translate[$name]) $this->translate[$name][] = $name;
+                if(empty($this->translate[$name])) $this->translate[$name][] = $name;
 
                 $this->blocks[0][] =  $name;
-
            }
-           return;
 
+           return;
         }
+
         $default = array_keys($blocks)[0];
         foreach ($this->columns as $name => $item) {
             if($name === 'id_row') continue;
@@ -192,13 +191,29 @@ abstract class BaseAdmin extends BaseController
                 }
             }
 
-            if(!$insert) $this->blocks[$default][] = $name;
-            if(!$this->translate[$name]) $this->translate[$name][] = $name;
+            // Проверяем - произошла ли вставка.
+
+            if($insert === false) $this->blocks[$default][] = $name;
+            if(empty($this->translate[$name])) $this->translate[$name][] = $name;
 
 
         }
         return;
 
+    }
+
+    protected function createRadio($settings = false) {
+        if(empty($settings)) $settings = Settings::instance();
+
+        $radio = $settings::get('radio');
+
+        if (!empty($radio)) {
+            foreach ($this->columns as $name => $item) {
+                if(!empty($radio[$name])) {
+                    $this->foreignData[$name] = $radio[$name];
+                }
+            }
+        }
     }
 
  }

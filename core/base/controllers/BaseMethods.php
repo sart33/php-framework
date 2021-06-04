@@ -14,6 +14,8 @@ trait BaseMethods
     protected function clearStr($str) {
 
         if (is_array($str)) {
+            //strip_tags — Удаляет теги HTML и PHP из строки
+
             foreach ($str as $key => $item) $str[$key] = trim(strip_tags($item));
             return $str;
         } else {
@@ -37,19 +39,18 @@ trait BaseMethods
     }
 
     protected function redirect($http = false, $code = false) {
-        if($code) {
+        if(isset($code)) {
             $codes = ['301' => 'HTTP/1.1 301 Move Permanently'];
+            if (isset($codes[$code])) header($codes[$code]);
 
-            if($codes[$code]) header($codes[$code]);
         }
-        if($http) $redirect = $http;
+        if(isset($http)) $redirect = $http;
         else $redirect = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : PATH;
 
-        header('Location: ' . $redirect );
-
+        header("Location: $redirect");
+        exit;
 
     }
-
     protected function writeLog($message, $file = 'log.txt', $event = 'Fault') {
 
         $dateTime = new \DateTime();
@@ -59,17 +60,5 @@ trait BaseMethods
         file_put_contents('log/' . $file, $str, FILE_APPEND);
     }
 
-    protected function createRadio($settings = false) {
-        if(!$settings) $settings = Settings::instance();
-        $radio = $settings->get('radio');
-
-        if($radio) {
-            foreach ($this->columns as $name => $item) {
-                if($radio[$name]) {
-                    $this->foreignData[$name] = $radio[$name];
-                }
-            }
-        }
-    }
 
 }

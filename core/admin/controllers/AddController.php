@@ -13,7 +13,7 @@ class AddController extends BaseAdmin
 {
     protected function inputData()
     {
-        if(!$this->userId) $this->execBase();
+        if(empty($this->userId)) $this->execBase();
 
         // Этот метод ничего не будет возвращать - поскольку это служебные методы они заполнняют свойства наших классов.
         $this->createTableData();
@@ -26,31 +26,9 @@ class AddController extends BaseAdmin
 
         $this->createOutputData();
 
-        $this->manyAdd();
-
-        exit;
-
-//        $this->model->showForeiginKeys($this->table);
-    }
-
-    protected function manyAdd() {
-
-        $fields = [
-          'name' => 'lenochka', 'menu_position' => 1
-        ];
-
-        $files =
-            [
-//                'img' => '3.webp',
-            'gallery_img' => ['4.webp', '5.webp', '6.webp']
-        ];
-
-        $this->model->add('teachers', [
-            'fields' => $fields,
-            'files' => $files
-            ]);
 
     }
+
 
     protected function createForeignProperty($arr, $rootItems) {
         if(in_array($this->table, $rootItems['tables'])) {
@@ -60,7 +38,9 @@ class AddController extends BaseAdmin
         }
         $columns = $this->model->showColumns($arr['REFERENCED_TABLE_NAME']);
         $name = '';
-        if($columns['name']) {
+        $where =[];
+        $operand = [];
+        if(!empty($columns['name'])) {
             $name = 'name';
         } else {
             foreach ($columns as $key => $value) {
@@ -68,10 +48,10 @@ class AddController extends BaseAdmin
                     $name = $key . 'as name';
                 }
             }
-            if (!$name) $name = $columns['id_row'] . ' as name';
+            if(empty($name)) $name = $columns['id_row'] . ' as name';
         }
 
-        if($this->data) {
+        if(!empty($this->data)) {
             // Если ссылаемся сами на себя
             if ($arr['REFERENCED_TABLE_NAME'] === $this->table) {
                 //В $this->columns['id_row'] - лежит строка id.
@@ -85,41 +65,40 @@ class AddController extends BaseAdmin
             }
 
         }
-        $foreign = $this->model->get($arr['REFERENCED_TABLE_NAME'],
-            ['fields' => [$arr['REFERENCED_COLUMN_NAME'] . ' as id', $name],
+        $foreign = $this->model->get($arr['REFERENCED_TABLE_NAME'], [
+                'fields' => [$arr['REFERENCED_COLUMN_NAME'] . ' as id', $name],
                 'where' => $where,
                 'operand' => $operand
             ]);
 
-        if($foreign) {
-            if($this->foreignData[$arr['COLUMN_NAME']]) {
+        if(!empty($foreign)) {
+            if(!empty($this->foreignData[$arr['COLUMN_NAME']])) {
                 foreach ($foreign as $value) {
                     $this->foreignData[$arr['COLUMN_NAME']][] = $value;
                 }
-
             } else {
                 $this->foreignData[$arr['COLUMN_NAME']] = $foreign;
-
             }
         }
     }
 
+    // Метод создающий внешние ключи!?
     protected function createForeignData($settings = false) {
 
-        if(!$settings) $settings = Settings::instance();
+        if(empty($settings)) $settings = Settings::instance();
 
         $rootItems = $settings::get('rootItems');
+        // Если ссылаемся сами на себя
 
         $keys = $this->model->showForeignKeys($this->table);
 
-        if($keys) {
+        if(!empty($keys)) {
             foreach ($keys as $item) {
 
                 $this->createForeignProperty($item, $rootItems);
-
             }
 
-        } elseif ($this->columns['parent_id']) {
+        } elseif (!empty($this->columns['parent_id'])) {
 
             $arr['COLUMN_NAME'] = 'parent_id';
             $arr['REFERENCED_COLUMN_NAME'] = $this->columns['id_row'];
@@ -128,16 +107,17 @@ class AddController extends BaseAdmin
             $this->createForeignProperty($arr, $rootItems);
 
         }
-    return;
+
+        return;
    }
 
    protected function createMenuPosition($settings = false) {
     // Если тут пусто, - то все -дальше не едем)
-        if($this->columns['menu_position']) {
-            if(!$settings) $settings = Settings::instance();
+       if(isset($this->columns['menu_position'])) {
+           if (empty($settings)) $settings = Settings::instance();
             $rootItems = $settings->get('rootItems');
             // Дальше проверяем - есть ли внашей таблице parent_id, или просто - взять и посчитать записи.
-            if($this->columns['parent_id']) {
+           if (!empty($this->columns['parent_id'])) {
                 // Если есть корневая директория - то надо посчитать сколько есть корневых директорий, т.е. - сколько полей.
                 // Проверяем наличие нашей таблице в $rootItems['tables']
                 if(in_array($this->table, $rootItems['tables'])) {
@@ -150,7 +130,8 @@ class AddController extends BaseAdmin
                     // Дальше придет AND COLUMN_NAME = 'parent_id' .
                     // Именно parent_id - должен ссылаться на какие-то внешние таблицы,
                     // потому что именно по этому критерию - мы и определяем родителя.
-                    if($parent) {
+                    if(!empty($parent)) {
+
                         if($this->table === $parent['REFERENCED_COLUMN_NAME']) {
                             $where = 'parent_id IS NULL OR parent_id = 0';
 
@@ -160,7 +141,8 @@ class AddController extends BaseAdmin
                             $columns = $this->model->showColumns($parent['REFERENCED_TABLE_NAME']);
                             //Если есть parent_id - сортировку таблиц запускаем именно по нему. Если parent_id - нет,
                             // запускаем сортировку по REFERENCED_COLUMN_NAME
-                            if ($columns['parent_id']) $order[] = 'parent_id';
+                            if (!empty($columns['parent_id'])) $order[] = 'parent_id';
+
                             else $order[] = $parent['REFERENCED_COLUMN_NAME'];
                             //   Дальше надо получить идентификатор самой первого элемента вот в этой таблице -
                             // исходя из нашей сортировки
@@ -174,16 +156,16 @@ class AddController extends BaseAdmin
                                 // которое и запрашивали - $parent['REFERENCED_COLUMN_NAME']. Возвращаем (Ложим в id):
                             ])[0][$parent['REFERENCED_COLUMN_NAME']];
 
-                            if ($id) $where = ['parent_id' => $id];
+                            if(!empty($id)) $where = ['parent_id' => $id];
                         }
 
                     } else {
                         // Если родитель не пришел, то
                         $where = 'parent_id IS NULL OR parent_id = 0';
-
                     }
                 }
             }
+
             $menuPos = $this->model->get($this->table, [
                 'fields' => ['COUNT(*) as count'],
                 'where' => $where,
