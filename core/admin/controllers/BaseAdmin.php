@@ -25,6 +25,10 @@ abstract class BaseAdmin extends BaseController
     protected $translate;
     protected $blocks = [];
 
+    protected $templateArr;
+    protected $formTemplates;
+    protected $noDelete;
+
     // Этот абстрактный класс будет отвечать за сборку нашей страницы.
     // За подключения хедера и футера.
     //  А раз он отвечает за статические блоки, то именно он должен выполнить инициализацию скриптов и стилей.
@@ -37,6 +41,8 @@ abstract class BaseAdmin extends BaseController
         if (empty($this->model)) $this->model = Model::instance();
         if (empty($this->menu)) $this->menu = Settings::get('projectTables');
         if (empty($this->adminPath)) $this->adminPath = PATH . Settings::get('routes')['admin']['alias'] . '/';
+        if (empty($this->templateArr)) $this->templateArr = Settings::get('templateArr');
+        if (empty($this->formTemplates)) $this->formTemplates = Settings::get('formTemplates');
 
         // Заголовки ответов браузеру. При работе с изображениями - могут возникнуть большие проблемы,
         // связанные с кешированием файлов браузером. поэтому будем сразу отправлять заголовки что не надо это кешировать.
@@ -164,7 +170,7 @@ abstract class BaseAdmin extends BaseController
 
         $blocks = $settings->get('blockNeedle');
         $this->translate = $settings->get('translate');
-
+// Если blockNeedle не массивили вообще пуста: мы создаем массив, в нулевом элементе которого лежат все поля.
         if(empty($blocks) || !is_array($blocks)) {
             foreach ($this->columns as $name => $item ) {
                 if($name === 'id_row') continue;
@@ -215,5 +221,81 @@ abstract class BaseAdmin extends BaseController
             }
         }
     }
+
+   protected function checkPost($settings = false) {
+
+       if(!empty($this->isPost())) {
+            $this->clearPostFields($settings);
+            $this->table = $this->clearStr($_POST['table']);
+            unset ($_POST['table']);
+            if(!empty($this->table)) {
+                $this->createTableData($settings); // Внутри которого ShowColumns проверит есть ли данные о таблицах и если нет -
+                // екзеппшн. Это позволит отсеять вредоносный/нежелательный код пришедший методом POST.
+                $this->editData();
+            }
+       }
+   }
+
+   protected function clearPostFields($settings, &$arr = []) {
+        // Этот метод - должен уметь обрабатывать и не только пост но и др массивы.
+       if (empty($arr)) $arr = &$_POST; // & - Ссылка
+       if (empty($settings)) $settings = Settings::instance();
+
+//       $id = !empty($_POST[$this->columns['id_row']]) ?: false;
+
+
+       $validate = $settings::get('validation');
+       if(empty($this->translate)) $this->translate = $settings::get('translate');
+
+       foreach ($arr as $key => $item) {
+            // Кажд элемент может быть массивом, - поэтому метод будет рекурсивным
+           if(is_array($item)) {
+               $this->clearPostFields($settings, $item); // Вот и рекурсия в случае если массив
+           } else {
+                if (is_numeric($item)) {
+            // $item - это отдельная переменная интерфейса Итератор, которая никак не взаимодействует с нашим массивом.
+                    $arr[$key] = $this->clearNum($item);
+                }
+
+                if (!empty($validate)) {
+
+//                    if(!empty(array_key_exists($key, $validate))) {
+
+//                    }
+                    if (!empty($validate[$key])) {
+                        if(!empty($this->translate[$key])) {
+                            $answer = $this->translate[$key][0];
+                        } else {
+                            $answer = $key;
+                        }
+
+                        if(!empty($validate[$key]['crypt'])) {
+                            if(!empty($id)) {
+                                if(empty($item)) {
+                                    unset ($arr[$key]);
+                                    continue;
+                                }
+
+                                $arr[$key] = md5($item);
+                            }
+
+                        }
+
+                        if(!empty($validate[$key]['empty'])) $this->emptyFields($item, $answer);
+                        if(!empty($validate[$key]['trim'])) $arr[$key] = trim($item);
+                        if(!empty($validate[$key]['int'])) $arr[$key] = $this->clearNum($item);
+                        if(!empty($validate[$key]['count'])) $this->countChar($item, $validate[$key]['count'], $answer);
+
+                    }
+                }
+           }
+       }
+
+       return true;
+   }
+
+   protected function editData() {
+
+   }
 
  }

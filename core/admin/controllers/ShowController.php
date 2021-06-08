@@ -16,6 +16,21 @@ class ShowController extends BaseAdmin
         // Плагины будут наследоваться от этих контроллеров (сейчас конкретно - это ShowController).
         // Поетому в BaseAdmin - создадим небольшой метод, который просто будет вызывать метод самого BaseAdmin.
         if(empty($this->userId)) $this->execBase();
+
+        $res = $this->model->get('teachers', ['fields' =>['id', 'name'],
+            'join' => [
+                'students' => [
+                    'fields' => ['id as t_id', 'name as t_name'],
+                    'on' => ['parent_id', 'id']
+                ]
+            ]
+        ]);
+
+
+//            echo '<pre>';
+//            print_r($res);
+//                        echo '<pre>';
+//exit;
         // Этот метод ничего не будет возвращать - поскольку это служебные методы они заполнняют свойства наших классов.
         $this->createTableData();
 

@@ -16,7 +16,7 @@ trait Singleton
     {
     }
 
-    static public function  instance()
+    static public function instance()
     {
         if(self::$_instance instanceof self) {
             return self::$_instance;

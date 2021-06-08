@@ -11,9 +11,13 @@ use core\base\settings\Settings;
 
 class AddController extends BaseAdmin
 {
+    protected $action = 'add';
+
     protected function inputData()
     {
-        if(empty($this->userId)) $this->execBase();
+        if(empty($this->userId)) $this->execBase(); // Метод инициализирующий все: скрипты, заголовок ...
+
+        $this->checkPost();
 
         // Этот метод ничего не будет возвращать - поскольку это служебные методы они заполнняют свойства наших классов.
         $this->createTableData();
@@ -25,6 +29,14 @@ class AddController extends BaseAdmin
         $this->createRadio();
 
         $this->createOutputData();
+
+//        $this->data = [
+//            'name' => 'Masha',
+//            'keywords' =>'Ключевики',
+//            'img' => '1.jpg',
+//            'gallery_img' => json_encode(['2.jpg', '3.jpg'])
+//
+//        ];
 
 
     }
@@ -123,8 +135,9 @@ class AddController extends BaseAdmin
                 if(in_array($this->table, $rootItems['tables'])) {
                     $where = 'parent_id IS NULL OR parent_id = 0';
                 } else {
+                    if(!empty($this->model->showForeignKeys($this->table, 'parent_id'))) {
                     // Если есть parent_id то по логике должны быть и внешние ключи. Вот и запросим эти внешние ключи.
-                    $parent = $this->model->showForeignKeys($this->table, 'parent_id')[0]; // Тут мы пришли к причине зачем,
+                    $parent = $this->model->showForeignKeys($this->table, 'parent_id')[0]; }// Тут мы пришли к причине зачем,
                     // в методе модели был указа ключ $key/ Здесь - мы подадим второй необязательный параметр!:
                     //ключ - ограничивающий нашу выборку и уточняющий ее.
                     // Дальше придет AND COLUMN_NAME = 'parent_id' .

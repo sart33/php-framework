@@ -56,14 +56,21 @@ class Settings
 
     private $defaultTable = 'teachers';
 
+    private $formTemplates = PATH . 'core/admin/views/includes/form_templates/';
+
     private $projectTables = [
         'teachers' => ['name' => 'Учителя', 'img' => 'teacher.png'],
         'students' => ['name' => 'Ученики', 'img' => 'student.png']
     ];
 
     private $templateArr = [
-        'text' => ['name', 'phone', 'adress'],
-        'textarea' => ['content', 'keywords']
+        'text' => ['name'],
+        'textarea' => ['content', 'keywords'],
+        'radio' => ['visible'],
+        'select' => ['menu_position', 'parent_id'],
+        'img' => ['img'],
+        'gallery_img' => ['gallery_img']
+
     ];
 
     private $translate = [
@@ -78,13 +85,23 @@ class Settings
 
     private $rootItems = [
         'name' => 'Корневая',
-        'tables' => ['teachers', 'articles']
+        'tables' => ['articles']
     ];
 
     private $blockNeedle = [
         'vg-rows' => [],
-        'vg-img' => ['id'],
-        'vg-content' => ['name']
+        'vg-img' => ['img'],
+        'vg-content' => ['content']
+    ];
+
+    private $validation = [
+        'name' => ['empty'=> true, 'trim' => true],
+        'price' => ['int' => true],
+        'login' => ['empty' => true, 'trim' => true],
+        'password' => ['crypt' => true, 'empty' => true],
+        'keywords' => ['count' => 70, 'trim' => true],
+        'description' => ['count' => 160, 'trim' => true],
+
     ];
 
 
