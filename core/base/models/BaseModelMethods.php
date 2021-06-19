@@ -61,7 +61,7 @@ abstract class BaseModelMethods
 
     protected function createWhere($set, $table = false, $instruction = 'WHERE') {
 
-        $table = (isset($table) && empty($set['no_concat'])) ? $table . '.' : '';
+        $table = (!empty($table) && empty($set['no_concat'])) ? $table . '.' : '';
 
         $where = '';
         // Существуют ситуации - когда $where надо передать просто строкой,

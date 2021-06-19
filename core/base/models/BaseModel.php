@@ -323,4 +323,19 @@ abstract class BaseModel extends BaseModelMethods
 
         return $columns;
     }
+
+    final public function showTables() {
+        $query = 'SHOW TABLES';
+
+        $tables = $this->query($query);
+
+        $tableArr = [];
+        
+        if(!empty($tables)) {
+            foreach ($tables as $table) {
+               $tableArr[] = reset($table);
+            }
+        }
+        return $tableArr;
+    }
 }

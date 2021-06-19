@@ -2,7 +2,7 @@
 
 defined('VG_ACCESS') or die('Access denied');
 
-const SITE_URL = 'http://phpauto.loc/';
+const SITE_URL = 'http://mac-centre.com';
 const PATH = '/';
 
 const HOST = 'localhost';

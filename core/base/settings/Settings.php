@@ -52,7 +52,9 @@ class Settings
     ];
 
     // Тут будем хранить путь к директории, где хранятся наши расширения.
-    private $expansion = 'core/admin/expansion/';
+    private $expansion = 'core/admin/expansion';
+
+    private $messages = 'core/base/messages';
 
     private $defaultTable = 'teachers';
 
@@ -75,6 +77,7 @@ class Settings
 
     private $translate = [
         'name' => ['Название', 'Не более 100 символов'],
+        'keywords' => ['ключевые слова', 'не более 70 символов '],
         'content' => []
     ];
 
