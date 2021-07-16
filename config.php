@@ -2,7 +2,7 @@
 
 defined('VG_ACCESS') or die('Access denied');
 
-const SITE_URL = 'http://mac-centre.com';
+const SITE_URL = 'http://kompress-beljo.com';
 const PATH = '/';
 
 const HOST = 'localhost';

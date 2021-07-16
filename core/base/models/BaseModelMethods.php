@@ -6,7 +6,7 @@ namespace core\base\models;
 
 abstract class BaseModelMethods
 {
-    protected $sqlFunc = ['NOW()'];
+    protected array $sqlFunc = ['NOW()'];
 
     protected function createFields($set, $table = false)
     {

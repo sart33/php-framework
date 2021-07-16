@@ -36,7 +36,7 @@ abstract class BaseModel extends BaseModelMethods
         // и тут можно уже использовать метод query объекта mysqli
         // В $result приходит объект содержащий выборку из базы даных.
         $result = $this->db->query($query);
-        if ($this->db->affected_rows === -1) {
+        if ($this->db->affected_rows === - 1) {
             throw new DbException('error in SQL query: ' . $query . ' - ' . $this->db->errno . ' ' . $this->db->error);
         }
         // При помощи оператора множественного выбора switch мы проверяем а что находится в переменной $crud
@@ -179,6 +179,7 @@ abstract class BaseModel extends BaseModelMethods
 
     final public function edit($table, $set = []) {
 
+        $where = '';
         $set['fields'] = (!empty($set['fields']) && is_array($set['fields'])) ? $set['fields'] : $_POST;
         $set['files'] = (!empty($set['files']) && is_array($set['files'])) ? $set['files'] : false;
 
